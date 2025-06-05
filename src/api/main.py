@@ -15,7 +15,7 @@ def custom_openapi():
 
     auth_type = os.getenv("AUTH_TYPE", "basic").lower()
     openapi_schema = get_openapi(
-        title="Airline Management System API",
+        title="Airline Customer Conversational Intelligence Platform API",
         version="0.1.0",
         description="API for retrieving airline boarding pass details.",
         routes=app.routes,
