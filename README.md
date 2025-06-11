@@ -57,11 +57,21 @@ This project includes:
 
 Once the environment is activated, run the main Python script:
 
+    For PostgresSql database
+        Schema
+            create_airline_schema.sql
+
     For Mock data generation
-        cd .\src\data\
-        python .\generator.py
+        Data Generation
+            python src\data\generator.py
+        For Unittest to run
+            python -m unittest tests/test_data_generator.py -v
 
-        Large dataset (950) records loaded into PostgreSQL successfully.
 
-    For Testing
-        python .\predict.py
+        Large dataset (1700) records in total loaded into PostgreSQL successfully.
+
+    For Non-Ai APIs
+        For Fastapi to run
+            uvicorn src.api.main_no_auth:app --reload --port 8004 --host 127.0.0.1
+        For Unittest to run
+            python -m unittest tests/test_no_auth_api.py -v
