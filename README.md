@@ -72,6 +72,6 @@ Once the environment is activated, run the main Python script:
 
     For Non-Ai APIs
         For Fastapi to run
-            uvicorn src.api.main_no_auth:app --reload --port 8004 --host 127.0.0.1
+            uvicorn src.api.main:app --reload --port 8003 --host 0.0.0.0
         For Unittest to run
             python -m unittest tests/test_no_auth_api.py -v

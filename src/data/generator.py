@@ -2,9 +2,14 @@ from datetime import datetime, timedelta
 from faker import Faker
 import random
 import psycopg2
+import os
+from config import *
+from src.utils.secretload import get_secret
+
+get_secret(db_pass)
 
 class DataGenerator:
-    def __init__(self, host="localhost", port=5433, db="airline_db", user="postgres", password="Testing!@123"):
+    def __init__(self, host=db_host, port=db_port, db=db_name, user=db_user, password=os.getenv(db_pass)):
         """Initialize the DataGenerator with database connection and helper data."""
         self.fake = Faker()
         self.conn = psycopg2.connect(

@@ -15,10 +15,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",  # Format of the long description
     author="Dominic",  # Your name
-    author_email="your.email@example.com",  # Your email (optional)
-    url="https://github.com/yourusername/accip",  # Project URL (optional)
+    author_email="hopjetair@gmail.com",  # Your email (optional)
+    url="https://github.com/hopjetair/accip",  # Project URL (optional)
     license="MIT",  # License (choose one, e.g., MIT, Apache-2.0)
-
+    
     # Package discovery
     packages=find_packages(where="src"),  # Automatically find packages in src/
     package_dir={"": "src"},  # Map the root package to src/

@@ -6,22 +6,29 @@ sys.path.append(str(root))
 
 import unittest
 import psycopg2
-import os
 from src.data.generator import DataGenerator
 from datetime import datetime, timedelta
+
+import os
+from config import *
+from src.utils.secretload import get_secret
+
+get_secret(db_pass)
+
 
 class TestDataGenerator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        import os
         """Set up the test database and schema once for all tests."""
         # Connect to PostgreSQL and create the test database if needed
         try:
             conn = psycopg2.connect(
-                host="localhost", port=5433, user="postgres", password="Testing!@123"
+                host=db_host, port=db_port, user=db_user, password=os.getenv(db_pass)
             )
             conn.autocommit = True
             cursor = conn.cursor()
-            cursor.execute("CREATE DATABASE test_airline_db;")
+            cursor.execute(f"CREATE DATABASE {db_testname};")
             cursor.close()
             conn.close()
         except psycopg2.errors.DuplicateDatabase:
@@ -31,7 +38,8 @@ class TestDataGenerator(unittest.TestCase):
         #import os
         #/os.system("psql -h localhost -p 5433 -U postgres -d test_airline_db -f create_airline_schema.sql")
         import os
-        os.system(r'"C:\Program Files\PostgreSQL\17\bin\psql" -h localhost -p 5433 -U postgres -W Testing!@123 -d test_airline_db -f create_airline_schema.sql')
+        command = fr'"C:\Program Files\PostgreSQL\17\bin\psql" -h {db_host} -p {db_port} -U {db_user} -W {os.getenv(db_pass)} -d {db_testname}  -f create_airline_schema.sql'
+        os.system(command)
         
     @classmethod
     def tearDownClass(cls):
@@ -39,21 +47,21 @@ class TestDataGenerator(unittest.TestCase):
         try:
             # Connect to the main PostgreSQL instance (not test_airline_db)
             conn = psycopg2.connect(
-                host="localhost", port=5433, user="postgres", password="Testing!@123"
+                host=db_host, port=db_port, user=db_user, password=os.getenv(db_pass)
             )
             conn.autocommit = True
             cursor = conn.cursor()
 
             # Drop the test database if it exists
-            cursor.execute("DROP DATABASE IF EXISTS test_airline_db;")
+            cursor.execute(f"DROP DATABASE IF EXISTS {db_testname};")
             cursor.close()
             conn.close()
         except psycopg2.Error as e:
-            print(f"Warning: Failed to delete test_airline_db: {e}")        
+            print(f"Warning: Failed to delete {db_testname}: {e}")        
 
     def setUp(self):
         """Set up the DataGenerator instance for each test."""
-        self.generator = DataGenerator(db="test_airline_db")
+        self.generator = DataGenerator(db=db_testname)
         # Truncate all tables before each test to ensure a clean state
         self.generator.cursor.execute(
             "TRUNCATE TABLE Passengers, Flights, Bookings, Boarding_Passes, Trips, Trip_Components, Seats, Insurance, Offers RESTART IDENTITY CASCADE;"

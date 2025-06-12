@@ -5,8 +5,15 @@ from fastapi.openapi.utils import get_openapi
 
 from src.api.auth import get_api_key
 import os
+from src.utils.secretload import get_secret
+from config import api_key_secret_name
+
+
+get_secret(api_key_secret_name)
 
 app = FastAPI()
+
+
 
 # Include the router with the API key dependency
 app.include_router(router, dependencies=[Depends(get_api_key)])
@@ -16,7 +23,7 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Airline Customer Conversational Intelligence Platform",
+        title="Airline Customer Conversational Intelligence Platform (ACCIP)",
         version="0.1.0",
         description="API for retrieving airline data with API key authentication.",
         routes=app.routes,
