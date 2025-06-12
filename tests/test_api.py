@@ -1,79 +1,58 @@
-import sys
-from pathlib import Path
-file = Path(__file__).resolve()
-parent, root = file.parent, file.parents[1]
-sys.path.append(str(root))
- 
 import unittest
 import os
+import logging
 from fastapi.testclient import TestClient
 from src.api.main import app
-from src.api.auth import NoAuthProvider, BasicAuthProvider, CognitoAuthProvider, IamAuthProvider, LambdaAuthorizerProvider
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class TestAuthAPI(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
-        self.original_auth_type = os.getenv("AUTH_TYPE")
-        os.environ.pop("AUTH_TYPE", None)  # Clear AUTH_TYPE initially
+        logger.debug("Test client initialized")
 
-    def tearDown(self):
-        # Restore the original AUTH_TYPE
-        if self.original_auth_type is not None:
-            os.environ["AUTH_TYPE"] = self.original_auth_type
-        else:
-            os.environ.pop("AUTH_TYPE", None)
+    @patch('src.api.endpoints.get_boarding_pass_data', new_callable=MagicMock)
+    def test_get_boarding_pass_success(self, mock_get_boarding_pass_data):
+        logger.debug("Starting test_get_boarding_pass_success with booking_id B123")
+        mock_get_boarding_pass_data.return_value = ("B5", "5B", "2025-06-08T09:30:00", "https://airline.com/boardingpass/B123.pdf")
+        logger.debug(f"Mocked get_boarding_pass_data return value: {mock_get_boarding_pass_data.return_value}")
 
-    def test_get_boarding_pass_no_auth(self):
-        os.environ["AUTH_TYPE"] = "none"
-        # Use the helper method to display and verify AUTH_TYPE
-        auth_type_value = self.display_auth_type()
-        response = self.client.get("/api/v1/boarding-pass/B000001")
+        # Include API key in the request header
+        response = self.client.get(
+            "/api/v1/boarding-pass/B123",
+            headers={"X-API-Key": "my-secret-key"}
+        )
+        logger.debug(f"Response status: {response.status_code}, Response JSON: {response.json()}")
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["user"], "anonymous")
+        self.assertEqual(response.json(), {
+            "status": "success",
+            "boarding_pass": {
+                "gate": "B5",
+                "seat": "5B",
+                "boarding_time": "2025-06-08T09:30:00",
+                "pdf_url": "https://airline.com/boardingpass/B123.pdf"
+            }
+        })
+        mock_get_boarding_pass_data.assert_called_once()
 
-    def test_get_boarding_pass_basic_auth(self):
-        os.environ["AUTH_TYPE"] = "basic"
-        # Use the helper method to display and verify AUTH_TYPE
-        auth_type_value = self.display_auth_type()
-        response = self.client.get("/api/v1/boarding-pass/B000001", auth=("admin", "password123"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["user"], "admin")
+    @patch('src.api.endpoints.get_boarding_pass_data', new_callable=MagicMock)
+    def test_get_boarding_pass_unauthorized(self, mock_get_boarding_pass_data):
+        logger.debug("Starting test_get_boarding_pass_unauthorized with booking_id B123")
+        mock_get_boarding_pass_data.return_value = ("B5", "5B", "2025-06-08T09:30:00", "https://airline.com/boardingpass/B123.pdf")
 
-    def test_get_boarding_pass_cognito_auth(self):
-        os.environ["AUTH_TYPE"] = "cognito"
-        # Use the helper method to display and verify AUTH_TYPE
-        auth_type_value = self.display_auth_type()
+        # Test with an invalid API key
+        response = self.client.get(
+            "/api/v1/boarding-pass/B123",
+            headers={"X-API-Key": "invalid-key"}
+        )
+        logger.debug(f"Response status: {response.status_code}, Response JSON: {response.json()}")
 
-        # Mock a JWT token with a username
-        mock_token = "mock_token"
-        mock_decoded = {"username": "cognito_user"}
-        with patch('jose.jwt.decode', return_value=mock_decoded):
-            response = self.client.get("/api/v1/boarding-pass/B000001", headers={"Authorization": "Bearer mock_token"})
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json()["user"], "cognito_user")
-
-    def test_get_boarding_pass_iam_auth(self):
-        os.environ["AUTH_TYPE"] = "iam"
-        # Use the helper method to display and verify AUTH_TYPE
-        auth_type_value = self.display_auth_type()
-        response = self.client.get("/api/v1/boarding-pass/B000001", headers={"Authorization": "Bearer mock_token"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["user"], "iam_user")
-
-    def test_get_boarding_pass_lambda_auth(self):
-        os.environ["AUTH_TYPE"] = "lambda"
-        # Use the helper method to display and verify AUTH_TYPE
-        auth_type_value = self.display_auth_type()
-        response = self.client.get("/api/v1/boarding-pass/B000001", headers={"Authorization": "Bearer mock_token"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["user"], "lambda_user")
-        
-    def display_auth_type(self):
-        """Helper method to print and verify AUTH_TYPE"""
-        auth_type_value = os.getenv("AUTH_TYPE")
-        print(f"AUTH_TYPE is set to: {auth_type_value}")  # Prints to test output
-        return auth_type_value        
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), {"detail": "Invalid or missing API Key"})
 
 if __name__ == "__main__":
     unittest.main()

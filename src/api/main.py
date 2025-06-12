@@ -1,54 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from src.api.endpoints import router
-import os
+from src.api.auth import get_api_key
 from fastapi.openapi.utils import get_openapi
+
+from src.api.auth import get_api_key
+import os
 
 app = FastAPI()
 
-# Include the router
-app.include_router(router)
+# Include the router with the API key dependency
+app.include_router(router, dependencies=[Depends(get_api_key)])
 
-# Customize OpenAPI schema based on AUTH_TYPE
+# Customize OpenAPI schema (no authentication in schema for simplicity)
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-
-    auth_type = os.getenv("AUTH_TYPE", "basic").lower()
     openapi_schema = get_openapi(
-        title="Airline Customer Conversational Intelligence Platform API",
+        title="Airline Customer Conversational Intelligence Platform",
         version="0.1.0",
-        description="API for retrieving airline boarding pass details.",
+        description="API for retrieving airline data with API key authentication.",
         routes=app.routes,
     )
-
-    # Remove security schemes when AUTH_TYPE=none
-    if auth_type == "none":
-        openapi_schema["components"]["securitySchemes"] = {}
-        openapi_schema["security"] = []
-        for path in openapi_schema["paths"].values():
-            for method in path.values():
-                if "security" in method:
-                    del method["security"]
-    else:
-        # Define security schemes for other auth types
-        if auth_type == "basic":
-            openapi_schema["components"]["securitySchemes"] = {
-                "basicAuth": {
-                    "type": "http",
-                    "scheme": "basic",
-                }
-            }
-            openapi_schema["security"] = [{"basicAuth": []}]
-        else:  # cognito, iam, lambda
-            openapi_schema["components"]["securitySchemes"] = {
-                "bearerAuth": {
-                    "type": "http",
-                    "scheme": "bearer",
-                    "bearerFormat": "JWT",
-                }
-            }
-            openapi_schema["security"] = [{"bearerAuth": []}]
-
+    openapi_schema["components"]["securitySchemes"] = {
+        "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"}
+    }
+    openapi_schema["security"] = [{"ApiKeyAuth": []}]
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
