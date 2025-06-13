@@ -1,24 +1,16 @@
 from fastapi import FastAPI, Depends
-from src.api.endpoints import router
-from src.api.auth import get_api_key
+from src.api.endpoints.boarding import router as boarding_router
+from src.api.endpoints.flight_management import router as flight_router
+from src.api.endpoints.trip_management import router as trip_router
 from fastapi.openapi.utils import get_openapi
-
 from src.api.auth import get_api_key
-import os
-from src.utils.secretload import get_secret
-from config import api_key_secret_name
-
-
-get_secret(api_key_secret_name)
 
 app = FastAPI()
 
+app.include_router(boarding_router, dependencies=[Depends(get_api_key)])
+app.include_router(flight_router, dependencies=[Depends(get_api_key)])
+app.include_router(trip_router, dependencies=[Depends(get_api_key)])
 
-
-# Include the router with the API key dependency
-app.include_router(router, dependencies=[Depends(get_api_key)])
-
-# Customize OpenAPI schema (no authentication in schema for simplicity)
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
