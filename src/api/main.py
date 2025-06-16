@@ -7,6 +7,10 @@ from src.api.auth import get_api_key
 
 app = FastAPI()
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}  # Can be enhanced to check router status if needed
+
 app.include_router(boarding_router, dependencies=[Depends(get_api_key)])
 app.include_router(flight_router, dependencies=[Depends(get_api_key)])
 app.include_router(trip_router, dependencies=[Depends(get_api_key)])

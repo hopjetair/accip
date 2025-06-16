@@ -14,11 +14,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
-COPY . .
+# Copy the application code and configuration
+COPY src/ ./src/
+COPY config.py .
 
 # Expose port
 EXPOSE 8003
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8003/health || exit 1
+
 # Run the application
-CMD ["uvicorn", "src.api.main_no_auth:app", "--host", "0.0.0.0", "--port", "8003"]
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8003"]

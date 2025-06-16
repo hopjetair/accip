@@ -1,17 +1,1 @@
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-env3/
-.venv/
-*.env
-*.log
-tests/
-.git
-.gitignore
-Dockerfile
-.dockerignore
-README.md
+pycache*.pyc *.pyo *.pyd .Python env/ venv/ env3/ .venv/ application/ *.env *.log tests/ .git .gitignore Dockerfile .dockerignore README.md MANIFEST.in setup.py create_airline_schema.sql
