@@ -1,6 +1,6 @@
 {
   "family": "accip-api",
-  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::489582127457:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
@@ -8,7 +8,7 @@
   "containerDefinitions": [
     {
       "name": "accip-api",
-      "image": "YOUR_ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/accip-api:latest",
+      "image": "489582127457.dkr.ecr.ap-southeast-2.amazonaws.com/accip-api:latest",
       "essential": true,
       "portMappings": [
         {
