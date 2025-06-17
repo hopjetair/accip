@@ -13,12 +13,13 @@ env:
   ECS_TASK_DEFINITION: task-definition.json
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read # Required to checkout code
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # Required for OIDC
-      contents: read # Required to checkout code
 
     steps:
       - name: Checkout code
