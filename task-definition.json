@@ -5,6 +5,10 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
   "memory": "1024",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },  
   "containerDefinitions": [
     {
       "name": "accip-api",
@@ -21,6 +25,9 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/accip-api",
+          "mode": "non-blocking",
+          "awslogs-create-group": "true",
+          "max-buffer-size": "25m",          
           "awslogs-region": "ap-southeast-2",
           "awslogs-stream-prefix": "ecs"
         }
