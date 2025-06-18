@@ -9,8 +9,8 @@ on:
 env:
   AWS_REGION: ap-southeast-2
   ECR_REPOSITORY: accip-api
-  ECS_CLUSTER: brilliant-koala-90tu8a
-  ECS_SERVICE: accip-api-service-5mt9c4pp
+  ECS_CLUSTER: beloved-wolf-0mjus8
+  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1
   ECS_TASK_DEFINITION: task-definition.json
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
@@ -79,18 +79,18 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY
 
-      # - name: Render Amazon ECS task definition
-      #   id: render-task-def
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: accip-api
-      #     image: ${{ steps.build-image.outputs.image }}
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: accip-api
+          image: ${{ steps.build-image.outputs.image }}
 
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
