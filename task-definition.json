@@ -18,7 +18,8 @@
         {
           "containerPort": 8003,
           "hostPort": 8003,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "appProtocol": "http"
         }
       ],
       "logConfiguration": {
