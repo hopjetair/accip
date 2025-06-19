@@ -6,9 +6,6 @@ on:
       - "db_infra/scripts/create_airline_schema.sql"
       - "db_infra/scripts/generator.py" # Adjust if generator.py location differs
 
-env:
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
