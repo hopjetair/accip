@@ -21,7 +21,8 @@ CREATE TABLE Flights (
     availability INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+ 
+ 
 -- Bookings Table: Links passengers to flights
 CREATE TABLE Bookings (
     booking_id VARCHAR(10) PRIMARY KEY,
