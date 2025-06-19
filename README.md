@@ -59,11 +59,11 @@ Once the environment is activated, run the main Python script:
 
     For PostgresSql database
         Schema
-            create_airline_schema.sql
+            db_infra\scripts\create_airline_schema.sql
 
     For Mock data generation
         Data Generation
-            python src\data\generator.py
+            python db_infra\scripts\generator.py
         For Unittest to run
             python -m unittest tests/test_data_generator.py -v
 
@@ -74,4 +74,4 @@ Once the environment is activated, run the main Python script:
         For Fastapi to run
             uvicorn src.api.main:app --reload --port 8003 --host 0.0.0.0
         For Unittest to run
-            python -m unittest tests/test_no_auth_api.py -v
+            python -m unittest tests/test_api.py -v

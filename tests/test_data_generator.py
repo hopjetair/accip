@@ -1,12 +1,13 @@
 import sys
-from pathlib import Path
-file = Path(__file__).resolve()
-parent, root = file.parent, file.parents[1]
-sys.path.append(str(root))
+
 
 import unittest
 import psycopg2
-from src.data.generator import DataGenerator
+
+
+
+
+from db_infra.scripts.generator import DataGenerator
 from datetime import datetime, timedelta
 
 import os
@@ -38,7 +39,7 @@ class TestDataGenerator(unittest.TestCase):
         #import os
         #/os.system("psql -h localhost -p 5433 -U postgres -d test_airline_db -f create_airline_schema.sql")
         import os
-        command = fr'"C:\Program Files\PostgreSQL\17\bin\psql" -h {db_host} -p {db_port} -U {db_user} -W {os.getenv(db_pass)} -d {db_testname}  -f create_airline_schema.sql'
+        command = fr'"C:\Program Files\PostgreSQL\17\bin\psql" -h {db_host} -p {db_port} -U {db_user} -W {os.getenv(db_pass)} -d {db_testname}  -f  db_infra\scripts\create_airline_schema.sql'
         os.system(command)
         
     @classmethod

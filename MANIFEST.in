@@ -1,2 +1,2 @@
 include README.md
-include create_airline_schema.sql
+include db_infra\scripts\create_airline_schema.sql

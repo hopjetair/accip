@@ -50,7 +50,7 @@ setup(
     # Optional: Entry points for CLI scripts
     entry_points={
         "console_scripts": [
-            "generate-airline-data=src.data.generator:DataGenerator.main",  # Example CLI command
+            "generate-airline-data=db_infra.scripts.generator:DataGenerator.main",  # Example CLI command
         ],
     },
 )

@@ -15,7 +15,7 @@ def get_secret(secret_name):
 
     #"prod_api_key"
     secret_name = secret_name
-    region_name = "ap-southeast-2"
+    region_name = aws_region  # Use the region from config.py
 
     # Create a Secrets Manager client
     session = boto3.session.Session()

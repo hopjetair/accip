@@ -9,3 +9,6 @@ db_pass = 'Testing!@123'
 db_port = '5433'
 
 db_testname = 'test_airline_db'
+
+# AWS configuration
+aws_region = "ap-southeast-2"  # Region for AWS services (e.g., Secrets Manager)

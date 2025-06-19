@@ -1,0 +1,43 @@
+name: Terraform Apply on Schema Change
+
+on:
+  push:
+    paths:
+      - "db_infra/scripts/create_airline_schema.sql"
+      - "db_infra/scripts/generator.py" # Adjust if generator.py location differs
+
+env:
+  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # - name: Create db-infra symlinks
+      #   run: |
+      #     mkdir -p db-infra/scripts
+      #     ln -sf ../create_airline_schema.sql db-infra/scripts/create_airline_schema.sql
+      #     # Adjust generator.py path if needed
+      #     ln -sf ../src/data/generator.py db-infra/scripts/generator.py || echo "generator.py not found, skipping"
+
+      - name: Terraform Init
+        working-directory: db-infra
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: db-infra
+        run: terraform apply -auto-approve
