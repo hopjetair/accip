@@ -1,0 +1,76 @@
+name: Aurora Airline Database Setup
+on:
+  #   push:
+  #     branches:
+  #       - main
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # Required to checkout the repository
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::YOUR_ACCOUNT_ID:role/GITHUB_OIDC_ROLE # Replace with your IAM role ARN
+          aws-region: YOUR_AWS_REGION # e.g., ap-southeast-2
+
+      - name: Install AWS CLI and PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli postgresql-client
+
+      - name: Install Python dependencies
+        run: |
+          pip install psycopg2-binary
+
+      - name: Retrieve AWS Secrets
+        run: |
+          echo "DB_CREDENTIALS=$(aws secretsmanager get-secret-value --secret-id db_credentials --query SecretString --output text)" >> $GITHUB_ENV
+          echo "API_SECRETS=$(aws secretsmanager get-secret-value --secret-id api_secrets --query SecretString --output text)" >> $GITHUB_ENV
+
+      - name: Parse Secrets
+        run: |
+          DB_USER=$(echo $DB_CREDENTIALS | jq -r '.db_user')
+          DB_PASS=$(echo $DB_CREDENTIALS | jq -r '.db_pass')
+          API_KEY=$(echo $API_SECRETS | jq -r '.api_key')
+          API_SECRET=$(echo $API_SECRETS | jq -r '.api_secret')
+          echo "DB_USER=$DB_USER" >> $GITHUB_ENV
+          echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
+          echo "API_KEY=$API_KEY" >> $GITHUB_ENV
+          echo "API_SECRET=$API_SECRET" >> $GITHUB_ENV
+        env:
+          DB_CREDENTIALS: ${{ env.DB_CREDENTIALS }}
+          API_SECRETS: ${{ env.API_SECRETS }}
+
+      - name: Apply airline schema
+        run: |
+          psql -h YOUR_AURORA_ENDPOINT -U $DB_USER -d airline_db -f create_airline_schema.sql
+        env:
+          PGPASSWORD: $DB_PASS
+
+      - name: Run generator script
+        run: |
+          python generator.py
+        env:
+          DATABASE_URL: "postgresql://${DB_USER}:${DB_PASS}@YOUR_AURORA_ENDPOINT:5432/airline_db"
+          API_KEY: ${{ env.API_KEY }}
+          API_SECRET: ${{ env.API_SECRET }}
+
+      - name: Verify database connection
+        run: |
+          psql -h YOUR_AURORA_ENDPOINT -U $DB_USER -d airline_db -c "\dt"
+        env:
+          PGPASSWORD: $DB_PASS
