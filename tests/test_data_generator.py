@@ -35,9 +35,9 @@ class TestDataGenerator(unittest.TestCase):
         except psycopg2.errors.DuplicateDatabase:
             pass  # Database already exists
 
-        # Apply the schema to test_airline_db (assumes create_airline_schema.sql exists)
+        # Apply the schema to test_hopjetairline_db (assumes create_airline_schema.sql exists)
         #import os
-        #/os.system("psql -h localhost -p 5433 -U postgres -d test_airline_db -f create_airline_schema.sql")
+        #/os.system("psql -h localhost -p 5433 -U postgres -d test_hopjetairline_db -f create_airline_schema.sql")
         import os
         command = fr'"C:\Program Files\PostgreSQL\17\bin\psql" -h {db_host} -p {db_port} -U {db_user} -W {os.getenv(db_pass)} -d {db_testname}  -f  db_infra\scripts\create_airline_schema.sql'
         os.system(command)
@@ -46,7 +46,7 @@ class TestDataGenerator(unittest.TestCase):
     def tearDownClass(cls):
         """Clean up by deleting the test database after all tests."""
         try:
-            # Connect to the main PostgreSQL instance (not test_airline_db)
+            # Connect to the main PostgreSQL instance (not test_hopjetairline_db)
             conn = psycopg2.connect(
                 host=db_host, port=db_port, user=db_user, password=os.getenv(db_pass)
             )

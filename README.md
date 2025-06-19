@@ -1,4 +1,4 @@
-# Airline Customer Conversational Intelligence Platform
+# Hopjet Airlines Customer Conversational Intelligence Platform
 
 A Python-based project to manage an airline database using FastAPI and PostgreSQL, with data generation and testing capabilities.
 
@@ -9,7 +9,7 @@ This project includes:
 - A FastAPI API (`src/api/`) for managing airline operations (e.g., bookings, flights).
 - A data generation module (`src/data/`) to populate the database with mock data.
 - Unit tests (`tests/`) for validating functionality.
-- A PostgreSQL database (`airline_db`) hosted locally or on AWS RDS.
+- A PostgreSQL database (`hopjetairline_db`) hosted locally or on AWS RDS.
 
 ## Prerequisites
 
