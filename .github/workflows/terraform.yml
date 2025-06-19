@@ -39,9 +39,9 @@ jobs:
       #     ln -sf ../src/data/generator.py db-infra/scripts/generator.py || echo "generator.py not found, skipping"
 
       - name: Terraform Init
-        working-directory: db-infra
+        working-directory: db_infra
         run: terraform init
 
       - name: Terraform Apply
-        working-directory: db-infra
+        working-directory: db_infra
         run: terraform apply -auto-approve
