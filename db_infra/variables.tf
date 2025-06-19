@@ -15,7 +15,7 @@ variable "db_name" {
 
 variable "master_username" {
   description = "Master username for the database"
-  default     = "admin"
+  default     = "hopjetair"
 }
 
 variable "master_password" {

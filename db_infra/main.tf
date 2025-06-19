@@ -51,8 +51,9 @@ resource "aws_rds_cluster" "airline_aurora" {
   engine                  = "aurora-postgresql"
   engine_version          = "15.3"
   database_name           = var.db_name
-  aws_role_arn              = var.aws_role_arn
-  db_subnet_group_name    = aws_db_subnet_group.airline.name
+  master_username         = var.master_username
+  master_password         = var.master_password
+    db_subnet_group_name    = aws_db_subnet_group.airline.name
   vpc_security_group_ids  = [aws_security_group.airline_sg.id]
   skip_final_snapshot     = true
   apply_immediately       = true
