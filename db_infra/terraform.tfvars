@@ -1,7 +1,0 @@
-aws_region      = "ap-southeast-2"
-vpc_cidr        = "10.0.0.0/16"
-db_name         = "airline_db"
-instance_class  = "db.t3.medium"
-master_username = "hopjetair"
-master_password = "SecurePass123!"
-aws_role_arn =  "arn:aws:iam::489582127457:role/GitHubActionsRole"
