@@ -1,49 +1,31 @@
-# Use this code snippet in your app.
-# If you need more information about configurations
-# or implementing the sample code, visit the AWS docs:
-# https://aws.amazon.com/developer/language/python/
-
+# secretload.py
 import boto3
 from botocore.exceptions import ClientError
 import json
 import os
-#from config import config
-from config import *
-
 
 def get_secret(secret_name):
-
-    #"prod_api_key"
-    secret_name = secret_name
-    region_name = aws_region  # Use the region from config.py
-
-    # Create a Secrets Manager client
+    region_name = os.getenv("AWS_REGION", "ap-southeast-2")
     session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
+    client = session.client(service_name='secretsmanager', region_name=region_name)
 
-    if not nonprod :
-        try:
-            get_secret_value_response = client.get_secret_value(
-                SecretId=secret_name
-            )
-        except ClientError as e:
-            # For a list of exceptions thrown, see
-            # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-            raise e
-            
-            
-
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
         secret = get_secret_value_response['SecretString']
-        secret=json.loads(secret)
-        for key, value in secret.items():os.environ[key] = value
-    else:
-        if(secret_name == 'db_pass'):
-            os.environ[secret_name] = {db_pass}
-        else:
-            os.environ[secret_name] = secret_name   #config. "Capst0neo3@2024"
+        secret_dict = json.loads(secret)
+        for key, value in secret_dict.items():
+            os.environ[key] = value
+    except ClientError as e:
+        print(f"Error retrieving secret {secret_name}: {e}")
+        if os.getenv("NONPROD", "True").lower() == "true":
+            # Fallback for nonprod environment (local development)
+            if secret_name == "db_credentials":
+                os.environ["db_user"] = os.getenv("DB_USER", "postgres")
+                os.environ["db_pass"] = os.getenv("DB_PASS", "Testing!@123")
+            elif secret_name == "api_secrets":
+                os.environ["api_key"] = os.getenv("API_KEY", "my-secret-key")
+                os.environ["api_secret"] = os.getenv("API_SECRET", "Capst0neo3@2024")
 
-    # Your code goes here.
-get_secret("prod_api_key")
+if __name__ == "__main__":
+    get_secret("db_credentials")
+    get_secret("api_secrets")

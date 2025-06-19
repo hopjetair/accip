@@ -1,3 +1,4 @@
+# .github/workflows/aurora-airline-setup.yml
 name: Aurora Airline Database Setup
 on:
   #   push:
@@ -9,8 +10,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # Required for OIDC authentication
-      contents: read # Required to checkout the repository
+      id-token: write # Required for OIDC
+      contents: read # Required to checkout code
 
     steps:
       - name: Checkout repository code
@@ -24,17 +25,17 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::YOUR_ACCOUNT_ID:role/GITHUB_OIDC_ROLE # Replace with your IAM role ARN
-          aws-region: YOUR_AWS_REGION # e.g., ap-southeast-2
+          role-to-assume: arn:aws:iam::489582127457:role/GitHubActionsRole # Matches deploy.yml
+          aws-region: ap-southeast-2
 
-      - name: Install AWS CLI and PostgreSQL client
+      - name: Install AWS CLI, PostgreSQL client, and jq
         run: |
           sudo apt-get update
-          sudo apt-get install -y awscli postgresql-client
+          sudo apt-get install -y awscli postgresql-client jq
 
       - name: Install Python dependencies
         run: |
-          pip install psycopg2-binary
+          pip install psycopg2-binary faker
 
       - name: Retrieve AWS Secrets
         run: |
@@ -55,22 +56,36 @@ jobs:
           DB_CREDENTIALS: ${{ env.DB_CREDENTIALS }}
           API_SECRETS: ${{ env.API_SECRETS }}
 
+      - name: Set Environment Variables
+        run: |
+          echo "DB_HOST=YOUR_AURORA_ENDPOINT" >> $GITHUB_ENV  # Replace with your Aurora endpoint
+          echo "DB_PORT=5432" >> $GITHUB_ENV
+          echo "DB_NAME=airline_db" >> $GITHUB_ENV
+          echo "AWS_REGION=ap-southeast-2" >> $GITHUB_ENV
+          echo "NONPROD=false" >> $GITHUB_ENV
+
       - name: Apply airline schema
         run: |
-          psql -h YOUR_AURORA_ENDPOINT -U $DB_USER -d airline_db -f create_airline_schema.sql
+          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f db_infra/scripts/create_airline_schema.sql
         env:
           PGPASSWORD: $DB_PASS
 
       - name: Run generator script
         run: |
-          python generator.py
+          python db_infra/scripts/generator.py
         env:
-          DATABASE_URL: "postgresql://${DB_USER}:${DB_PASS}@YOUR_AURORA_ENDPOINT:5432/airline_db"
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_PORT: ${{ env.DB_PORT }}
+          DB_NAME: ${{ env.DB_NAME }}
+          DB_USER: ${{ env.DB_USER }}
+          DB_PASS: ${{ env.DB_PASS }}
           API_KEY: ${{ env.API_KEY }}
           API_SECRET: ${{ env.API_SECRET }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          NONPROD: ${{ env.NONPROD }}
 
       - name: Verify database connection
         run: |
-          psql -h YOUR_AURORA_ENDPOINT -U $DB_USER -d airline_db -c "\dt"
+          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "\dt"
         env:
           PGPASSWORD: $DB_PASS
