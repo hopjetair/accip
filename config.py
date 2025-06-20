@@ -6,7 +6,7 @@ api_key_secret_name_value = "prod_api_value"
 
 # Use environment variables with fallbacks for local development
 nonprod = os.getenv("NONPROD", "True").lower() == "true"
-db_host = os.getenv("DB_HOST", "localhost")
+db_host = os.getenv("DB_HOST", "database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com")  # "localhost")
 db_name = os.getenv("DB_NAME", "hopjetairline_db")
 db_user = os.getenv("DB_USER", "hopjetair")
 db_pass = os.getenv("DB_PASS", "SecurePass123!")
