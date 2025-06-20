@@ -17,33 +17,37 @@ class DataGenerator:
                  password=os.getenv("DB_PASS", db_pass)):
         """Initialize the DataGenerator with database connection and helper data."""
         self.fake = Faker()
+        print(f"Starting database setup at {datetime.now().strftime('%H:%M:%S')}")
         # Connect to the default database to create hopjetairline_db if needed
         admin_conn = psycopg2.connect(
             host=host, port=port, database='postgres', user=user, password=password
         )
         admin_cursor = admin_conn.cursor()
         try:
-            # Check if hopjetairline_db exists, create if not
+            print(f"Checking database {db} existence at {datetime.now().strftime('%H:%M:%S')}")
             admin_cursor.execute("SELECT 1 FROM pg_database WHERE datname=%s", (db,))
             if not admin_cursor.fetchone():
+                print(f"Creating database {db} at {datetime.now().strftime('%H:%M:%S')}")
                 admin_cursor.execute(f"CREATE DATABASE {db}")
                 admin_conn.commit()
-                print(f"Created database {db}")
+                print(f"Finished creating database {db} at {datetime.now().strftime('%H:%M:%S')}")
             else:
-                print(f"Database {db} already exists")
+                print(f"Database {db} already exists at {datetime.now().strftime('%H:%M:%S')}")
         except psycopg2.Error as e:
             admin_conn.rollback()
-            print(f"Error creating database: {e}")
+            print(f"Error creating database at {datetime.now().strftime('%H:%M:%S')}: {e}")
             raise
         finally:
             admin_cursor.close()
             admin_conn.close()
 
         # Connect to the target database
+        print(f"Connecting to database {db} at {datetime.now().strftime('%H:%M:%S')}")
         self.conn = psycopg2.connect(
             host=host, port=port, database=db, user=user, password=password
         )
         self.cursor = self.conn.cursor()
+        print(f"Finished database connection at {datetime.now().strftime('%H:%M:%S')}")
         self.airports = [
             "Singapore (SIN)", "Sydney (SYD)", "Frankfurt (FRA)", "Paris (CDG)", "Tokyo (NRT)",
             "New York (JFK)", "London (LHR)", "Dubai (DXB)", "Los Angeles (LAX)", "Hong Kong (HKG)"
@@ -54,6 +58,7 @@ class DataGenerator:
 
     def apply_schema_if_needed(self, schema_file="db_infra/scripts/create_airline_schema.sql"):
         """Apply the schema only for missing tables."""
+        print(f"Starting schema application at {datetime.now().strftime('%H:%M:%S')}")
         required_tables = ['passengers', 'flights', 'bookings', 'boarding_passes', 'trips', 
                           'trip_components', 'seats', 'insurance', 'offers']
         existing_tables = []
@@ -65,32 +70,45 @@ class DataGenerator:
         for row in self.cursor.fetchall():
             existing_tables.append(row[0].lower())
         
-        missing_tables = [table for table in required_tables if table not in existing_tables]
-        if missing_tables:
-            print(f"Applying schema for missing tables: {missing_tables}")
-            try:
-                with open(schema_file, 'r') as file:
-                    sql_script = file.read()
-                    # Split into statements
-                    statements = sql_script.split(';')
-                    for statement in statements:
-                        statement = statement.strip()
-                        if statement and any(f"CREATE TABLE {table} (" in statement.upper() for table in missing_tables):
+        with open(schema_file, 'r') as file:
+            sql_script = file.read()
+            statements = sql_script.split(';')
+            for statement in statements:
+                statement = statement.strip()
+                if statement:
+                    table_match = None
+                    for table in required_tables:
+                        if f"CREATE TABLE {table.upper()} (" in statement.upper():
+                            table_match = table
+                            break
+                    if table_match:
+                        if table_match not in existing_tables:
+                            print(f"Creating schema for table {table_match} at {datetime.now().strftime('%H:%M:%S')}")
                             self.cursor.execute(statement)
-                    self.conn.commit()
-                    print(f"Schema applied for {missing_tables}")
-            except psycopg2.Error as e:
-                self.conn.rollback()
-                print(f"Error applying schema: {e}")
-                raise
-            except FileNotFoundError:
-                print(f"Schema file {schema_file} not found")
-                raise
-        else:
-            print("All required tables already exist, schema application skipped")
+                            print(f"Finished creating schema for table {table_match} at {datetime.now().strftime('%H:%M:%S')}")
+                        else:
+                            print(f"Schema for table {table_match} already exists at {datetime.now().strftime('%H:%M:%S')}")
+
+        # Apply indexes separately
+        for statement in statements:
+            statement = statement.strip()
+            if statement and "CREATE INDEX" in statement.upper():
+                try:
+                    print(f"Creating index for {statement.split('ON ')[1].split('(')[0]} at {datetime.now().strftime('%H:%M:%S')}")
+                    self.cursor.execute(statement)
+                    print(f"Finished creating index for {statement.split('ON ')[1].split('(')[0]} at {datetime.now().strftime('%H:%M:%S')}")
+                except psycopg2.Error as e:
+                    if "already exists" in str(e):
+                        print(f"Index for {statement.split('ON ')[1].split('(')[0]} already exists at {datetime.now().strftime('%H:%M:%S')}")
+                    else:
+                        raise
+
+        self.conn.commit()
+        print(f"Finished schema application at {datetime.now().strftime('%H:%M:%S')}")
 
     def generate_dataset(self, passengers_count=200, flights_count=50, bookings_count=300, trips_count=100, trip_components_count=150):
         """Generate the complete dataset with specified counts, applying schema if needed."""
+        print(f"Starting data generation at {datetime.now().strftime('%H:%M:%S')}")
         self.apply_schema_if_needed()  # Apply schema only if tables are missing
         # Verify schema before generating data
         required_tables = ['passengers', 'flights', 'bookings', 'boarding_passes', 'trips', 
@@ -106,22 +124,30 @@ class DataGenerator:
         
         if all(table in existing_tables for table in required_tables):
             passengers = self.generate_passengers(count=passengers_count)
+            print(f"Finished creating {len(passengers)} records for table passengers at {datetime.now().strftime('%H:%M:%S')}")
             flights = self.generate_flights(count=flights_count)
+            print(f"Finished creating {len(flights)} records for table flights at {datetime.now().strftime('%H:%M:%S')}")
             bookings = self.generate_bookings(count=bookings_count, passengers=passengers, flights=flights)
+            print(f"Finished creating {len(bookings)} records for table bookings at {datetime.now().strftime('%H:%M:%S')}")
             self.generate_boarding_passes(bookings=bookings)
+            print(f"Finished creating {len(bookings)} records for table boarding_passes at {datetime.now().strftime('%H:%M:%S')}")
             trips = self.generate_trips(count=trips_count, passengers=passengers)
+            print(f"Finished creating {len(trips)} records for table trips at {datetime.now().strftime('%H:%M:%S')}")
             self.generate_trip_components(count=trip_components_count, trips=trips, flights=flights)
+            print(f"Finished creating {trip_components_count} records for table trip_components at {datetime.now().strftime('%H:%M:%S')}")
             self.generate_seats(bookings=bookings)
+            print(f"Finished creating {len(bookings)} records for table seats at {datetime.now().strftime('%H:%M:%S')}")
             self.generate_insurance(flight_count=flights_count, trip_count=trips_count, bookings=bookings, trips=trips)
+            print(f"Finished creating {flights_count + trips_count} records for table insurance at {datetime.now().strftime('%H:%M:%S')}")
             self.generate_offers(flight_count=flights_count, trip_count=trips_count, flights=flights, trips=trips)
+            print(f"Finished creating {flights_count + trips_count} records for table offers at {datetime.now().strftime('%H:%M:%S')}")
             self.conn.commit()
-            boarding_passes_count = bookings_count
-            seats_count = bookings_count
-            offers_count = flights_count + trips_count
-            insurance_count = flights_count + trips_count
-            print(f"Large dataset ({passengers_count + flights_count + bookings_count + boarding_passes_count + seats_count + trips_count + trip_components_count + offers_count + insurance_count}) records loaded into PostgreSQL successfully.")
+            total_records = (passengers_count + flights_count + bookings_count + bookings_count + 
+                            trips_count + trip_components_count + bookings_count + 
+                            (flights_count + trips_count) + (flights_count + trips_count))
+            print(f"Finished data generation with {total_records} records at {datetime.now().strftime('%H:%M:%S')}")
         else:
-            print("Schema verification failed, data generation skipped. Please ensure all required tables exist.")
+            print(f"Schema verification failed at {datetime.now().strftime('%H:%M:%S')}, data generation skipped. Please ensure all required tables exist.")
 
     def generate_passengers(self, count=200):
         """Generate a specified number of passenger records."""
@@ -304,6 +330,7 @@ class DataGenerator:
 
     def close(self):
         """Close the database connection."""
+        print(f"Closing database connection at {datetime.now().strftime('%H:%M:%S')}")
         self.cursor.close()
         self.conn.close()
 
@@ -312,7 +339,7 @@ if __name__ == "__main__":
     try:
         generator.generate_dataset()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error occurred at {datetime.now().strftime('%H:%M:%S')}: {e}")
         generator.conn.rollback()
     finally:
         generator.close()
