@@ -84,7 +84,8 @@ jobs:
 
       - name: Verify database connection
         run: |
-          psql -h $DB_HOST -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "\dt"
+          echo "Total records across all tables:"
+          psql -h $DB_HOST -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -t -c "SELECT COALESCE(SUM(n_tup_t), 0) FROM pg_stat_all_tables WHERE schemaname = 'public' AND relname IN ('passengers', 'flights', 'bookings', 'boarding_passes', 'trips', 'trip_components', 'seats', 'insurance', 'offers');"
         env:
           PGPASSWORD: ${{ env.DB_PASS }}
           PGSSLMODE: require
