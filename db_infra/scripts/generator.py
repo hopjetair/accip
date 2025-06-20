@@ -60,6 +60,58 @@ class DataGenerator:
         """Apply the schema only for missing tables."""
         print(f"Starting schema application at {datetime.now().strftime('%H:%M:%S')}")
         required_tables = ['passengers', 'flights', 'bookings', 'boarding_passes', 'trips', 
+                        'trip_components', 'seats', 'insurance', 'offers']
+        existing_tables = []
+        self.cursor.execute("""
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        """)
+        for row in self.cursor.fetchall():
+            existing_tables.append(row[0].lower())
+        
+        with open(schema_file, 'r') as file:
+            sql_script = file.read()
+            statements = sql_script.split(';')
+            for statement in statements:
+                statement = statement.strip()
+                if statement:
+                    table_match = None
+                    for table in required_tables:
+                        if f"CREATE TABLE {table.upper()} (" in statement.upper():
+                            table_match = table
+                            break
+                    if table_match:
+                        if table_match not in existing_tables:
+                            print(f"Creating schema for table {table_match} at {datetime.now().strftime('%H:%M:%S')}")
+                            self.cursor.execute(statement)
+                            print(f"Finished creating schema for table {table_match} at {datetime.now().strftime('%H:%M:%S')}")
+                        else:
+                            print(f"Schema for table {table_match} already exists at {datetime.now().strftime('%H:%M:%S')}")
+
+            # Apply indexes separately, checking for existence
+            for statement in statements:
+                statement = statement.strip()
+                if statement and "CREATE INDEX" in statement.upper():
+                    index_name = statement.split('ON ')[1].split('(')[0].strip()
+                    try:
+                        self.cursor.execute(f"SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = %s", (index_name,))
+                        if not self.cursor.fetchone():
+                            print(f"Creating index for {index_name} at {datetime.now().strftime('%H:%M:%S')}")
+                            self.cursor.execute(statement)
+                            print(f"Finished creating index for {index_name} at {datetime.now().strftime('%H:%M:%S')}")
+                        else:
+                            print(f"Index {index_name} already exists at {datetime.now().strftime('%H:%M:%S')}")
+                    except psycopg2.Error as e:
+                        print(f"Error creating index {index_name} at {datetime.now().strftime('%H:%M:%S')}: {e}")
+                        self.conn.rollback()
+                        raise
+
+        self.conn.commit()
+        print(f"Finished schema application at {datetime.now().strftime('%H:%M:%S')}")
+
+        print(f"Starting schema application at {datetime.now().strftime('%H:%M:%S')}")
+        required_tables = ['passengers', 'flights', 'bookings', 'boarding_passes', 'trips', 
                           'trip_components', 'seats', 'insurance', 'offers']
         existing_tables = []
         self.cursor.execute("""
