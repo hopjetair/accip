@@ -3,9 +3,10 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 import os
+import config
 
 def get_secret(secret_name):
-    region_name = os.getenv("AWS_REGION", "ap-southeast-2")
+    region_name = os.getenv("aws_region", config.aws_region)
     session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name=region_name)
 
@@ -17,14 +18,14 @@ def get_secret(secret_name):
             os.environ[key] = value
     except ClientError as e:
         print(f"Error retrieving secret {secret_name}: {e}")
-        if os.getenv("NONPROD", "True").lower() == "true":
+        if os.getenv("NONPROD",config.nonprod).lower() == "true":
             # Fallback for nonprod environment (local development)
             if secret_name == "db_credentials":
-                os.environ["db_user"] = os.getenv("DB_USER", "postgres")
-                os.environ["db_pass"] = os.getenv("DB_PASS", "Testing!@123")
+                os.environ["db_user"] = os.getenv("db_user",config.db_user)
+                os.environ["db_pass"] = os.getenv("db_pass", config.db_pass)
             elif secret_name == "api_secrets":
-                os.environ["api_key"] = os.getenv("API_KEY", "my-secret-key")
-                os.environ["api_secret"] = os.getenv("API_SECRET", "Capst0neo3@2024")
+                os.environ["api_key"] = os.getenv("api_key","api_key")
+                os.environ["api_secret"] = os.getenv("api_secret")
 
 if __name__ == "__main__":
     get_secret("db_credentials")

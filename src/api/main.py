@@ -5,6 +5,11 @@ from src.api.endpoints.trip_management import router as trip_router
 from fastapi.openapi.utils import get_openapi
 from src.api.auth import get_api_key
 
+# Set NONPROD based on a command-line argument or default
+import sys
+nonprod_value = sys.argv[1] if len(sys.argv) > 1 else "True"
+os.environ["NONPROD"] = nonprod_value
+
 app = FastAPI()
 
 @app.get("/health")
@@ -19,7 +24,7 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Airline Customer Conversational Intelligence Platform (ACCIP)",
+        title="Hopjet Airlines Customer Conversational Intelligence Platform (HACCIP)",
         version="0.1.0",
         description="API for retrieving airline data with API key authentication.",
         routes=app.routes,
