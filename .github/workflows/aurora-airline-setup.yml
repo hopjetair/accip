@@ -91,11 +91,11 @@ jobs:
           DB_PASS: ${{ env.DB_PASS }}
 
       - name: Test PostgreSQL Connection
-        env:
-          PGPASSWORD: "SecurePass123!"
-          PGSSLMODE: require
         run: |
-          psql -h $DB_HOST -U $DB_USER -d $DB_NAME  -c "SELECT 1"
+          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "SELECT 1"
+        env:
+          PGPASSWORD: $DB_PASS
+          PGSSLMODE: require
 
     #   - name: Apply airline schema
     #     env:
