@@ -60,36 +60,6 @@ jobs:
           DB_CREDENTIALS: ${{ env.DB_CREDENTIALS }}
           API_SECRETS: ${{ env.API_SECRETS }}
 
-      - name: Compare DB_PASS with Hardcoded Password
-        run: |
-          # Set the hardcoded password that worked
-          HARDCODED_PASS="SecurePass123!"
-          DB_PASS_VALUE="$DB_PASS"
-
-          # Check if lengths match
-          if [ ${#HARDCODED_PASS} -ne ${#DB_PASS_VALUE} ]; then
-            echo "Error: Password lengths do not match. Hardcoded length: ${#HARDCODED_PASS}, DB_PASS length: ${#DB_PASS_VALUE}"
-            exit 1
-          fi
-
-          # Compare each character
-          mismatch=false
-          for ((i=0; i<${#HARDCODED_PASS}; i++)); do
-            if [ "${HARDCODED_PASS:$i:1}" != "${DB_PASS_VALUE:$i:1}" ]; then
-              echo "Mismatch at position $i: Hardcoded '${HARDCODED_PASS:$i:1}' vs DB_PASS '${DB_PASS_VALUE:$i:1}'"
-              mismatch=true
-            fi
-          done
-
-          if [ "$mismatch" = true ]; then
-            echo "Error: Passwords do not match character-for-character"
-            exit 1
-          else
-            echo "Passwords match character-for-character"
-          fi
-        env:
-          DB_PASS: ${{ env.DB_PASS }}
-
       - name: Test PostgreSQL Connection
         run: |
           psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "SELECT 1"
