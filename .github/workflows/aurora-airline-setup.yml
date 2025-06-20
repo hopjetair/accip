@@ -63,6 +63,8 @@ jobs:
       - name: Apply airline schema
         env:
           PGPASSWORD: $DB_PASS
+          PGSSLMODE: require
+          DB_HOST: ${{ env.DB_HOST }}
         run: |
           psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f db_infra/scripts/create_airline_schema.sql
 
@@ -85,3 +87,5 @@ jobs:
           psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "\dt"
         env:
           PGPASSWORD: $DB_PASS
+          PGSSLMODE: require
+          DB_HOST: ${{ env.DB_HOST }}
