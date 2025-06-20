@@ -71,7 +71,7 @@ jobs:
 
       - name: Test PostgreSQL Connection
         env:
-          PGPASSWORD: "SecurePass123!"
+          PGPASSWORD: $DB_PASS #"SecurePass123!"
           PGSSLMODE: require
         run: |
           psql -h $DB_HOST -U $DB_USER -d $DB_NAME  -c "SELECT 1"
