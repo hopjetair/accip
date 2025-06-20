@@ -9,7 +9,7 @@ connection = psycopg2.connect(host = db_host, database =  db_name, user = db_use
 print("connected to the databaser")
 
 cursor = connection.cursor()
-cursor.execute("Select version()")
+cursor.execute("Select 1")
 db_version = cursor.fetchone()
 print(db_version)
 

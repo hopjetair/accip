@@ -72,6 +72,7 @@ jobs:
       - name: Test PostgreSQL Connection
         env:
           PGPASSWORD: $DB_PASS
+          PGSSLMODE: require
         run: |
           psql -h database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com -U hopjetair -d hopjetairline_db -c "SELECT 1"
 
