@@ -49,7 +49,7 @@ jobs:
       - name: Parse Secrets
         run: |
           DB_USER=$(echo $DB_CREDENTIALS | jq -r '.db_user')
-          DB_PASS=$(echo $DB_CREDENTIALS | jq -r '.db_pass')
+          DB_PASS=$(echo $DB_CREDENTIALS | jq -r '.db_pass' | tr -d '[:space:]')
           API_KEY=$(echo $API_SECRETS | jq -r '.api_key')
           API_SECRET=$(echo $API_SECRETS | jq -r '.api_secret')
           echo "DB_USER=$DB_USER" >> $GITHUB_ENV
@@ -65,31 +65,38 @@ jobs:
           echo "DB_HOST=database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com" >> $GITHUB_ENV  # Replace with your Aurora endpoint
           echo "DB_PORT=5432" >> $GITHUB_ENV
           echo "DB_NAME=hopjetairline_db" >> $GITHUB_ENV
+          echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
           echo "AWS_REGION=ap-southeast-2" >> $GITHUB_ENV
           echo "NONPROD=false" >> $GITHUB_ENV
 
-      - name: Apply airline schema
-        run: |
-          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f db_infra/scripts/create_airline_schema.sql
+      - name: Test PostgreSQL Connection
         env:
           PGPASSWORD: $DB_PASS
-
-      - name: Run generator script
         run: |
-          python db_infra/scripts/generator.py
-        env:
-          DB_HOST: ${{ env.DB_HOST }}
-          DB_PORT: ${{ env.DB_PORT }}
-          DB_NAME: ${{ env.DB_NAME }}
-          DB_USER: ${{ env.DB_USER }}
-          DB_PASS: ${{ env.DB_PASS }}
-          API_KEY: ${{ env.API_KEY }}
-          API_SECRET: ${{ env.API_SECRET }}
-          AWS_REGION: ${{ env.AWS_REGION }}
-          NONPROD: ${{ env.NONPROD }}
+          psql -h database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com -U hopjetair -d hopjetairline_db -c "SELECT 1"
 
-      - name: Verify database connection
-        run: |
-          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "\dt"
-        env:
-          PGPASSWORD: $DB_PASS
+    #   - name: Apply airline schema
+    #     env:
+    #        PGPASSWORD: $DB_PASS
+    #     run: |
+    #       psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f db_infra/scripts/create_airline_schema.sql
+
+    #   - name: Run generator script
+    #     run: |
+    #       python db_infra/scripts/generator.py
+    #     env:
+    #       DB_HOST: ${{ env.DB_HOST }}
+    #       DB_PORT: ${{ env.DB_PORT }}
+    #       DB_NAME: ${{ env.DB_NAME }}
+    #       DB_USER: ${{ env.DB_USER }}
+    #       DB_PASS: ${{ env.DB_PASS }}
+    #       API_KEY: ${{ env.API_KEY }}
+    #       API_SECRET: ${{ env.API_SECRET }}
+    #       AWS_REGION: ${{ env.AWS_REGION }}
+    #       NONPROD: ${{ env.NONPROD }}
+
+    #   - name: Verify database connection
+    #     run: |
+    #       psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "\dt"
+    #     env:
+    #       PGPASSWORD: $DB_PASS
