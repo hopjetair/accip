@@ -60,13 +60,21 @@ jobs:
           DB_CREDENTIALS: ${{ env.DB_CREDENTIALS }}
           API_SECRETS: ${{ env.API_SECRETS }}
 
+      - name: Set Environment Variables
+        run: |
+          echo "DB_HOST=database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com" >> $GITHUB_ENV
+          echo "DB_PORT=5432" >> $GITHUB_ENV
+          echo "DB_NAME=airline_db" >> $GITHUB_ENV
+          echo "AWS_REGION=ap-southeast-2" >> $GITHUB_ENV
+          echo "NONPROD=false" >> $GITHUB_ENV
+
       - name: Apply airline schema
         env:
-          PGPASSWORD: $DB_PASS
+          PGPASSWORD: ${{ env.DB_PASS }}
           PGSSLMODE: require
           DB_HOST: ${{ env.DB_HOST }}
         run: |
-          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f db_infra/scripts/create_airline_schema.sql
+          psql -h $DB_HOST -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -f db_infra/scripts/create_airline_schema.sql
 
       - name: Run generator script
         run: |
@@ -84,8 +92,8 @@ jobs:
 
       - name: Verify database connection
         run: |
-          psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c "\dt"
+          psql -h $DB_HOST -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "\dt"
         env:
-          PGPASSWORD: $DB_PASS
+          PGPASSWORD: ${{ env.DB_PASS }}
           PGSSLMODE: require
           DB_HOST: ${{ env.DB_HOST }}
