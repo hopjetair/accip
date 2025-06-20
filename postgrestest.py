@@ -12,5 +12,18 @@ cursor = connection.cursor()
 cursor.execute("Select 1")
 db_version = cursor.fetchone()
 print(db_version)
+# Query visible tables
+cursor.execute("""
+    SELECT tablename, schemaname 
+    FROM pg_catalog.pg_tables 
+    WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+""")
+
+tables = cursor.fetchall()
+
+# Display table names
+for tablename, schemaname in tables:
+    print(f"{schemaname}.{tablename}")
+
 
 cursor.close()
