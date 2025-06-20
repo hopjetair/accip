@@ -57,16 +57,21 @@ This project includes:
 
 Once the environment is activated, run the main Python script:
 
-    For PostgresSql database
-        Schema
-            db_infra\scripts\create_airline_schema.sql
+    For PostgresSql
+        Database creating
+            aws console
+        Schema & Datageneration
+            github action Aurora Airline Database Setup
+        Other Housekeeping runs
+            python db_infra/scripts/verify_records.py
+            python db_infra/scripts/purge_records.py
+            python .\postgrestest.py
 
     For Mock data generation
         Data Generation
             python db_infra\scripts\generator.py
         For Unittest to run
             python -m unittest tests/test_data_generator.py -v
-
 
         Large dataset (1700) records in total loaded into PostgreSQL successfully.
 
