@@ -74,7 +74,7 @@ jobs:
           PGPASSWORD: "SecurePass123!"
           PGSSLMODE: require
         run: |
-          psql -h database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com -U hopjetair -d hopjetairline_db -c "SELECT 1"
+          psql -h $DB_HOST -U $DB_USER -d $DB_NAME  -c "SELECT 1"
 
     #   - name: Apply airline schema
     #     env:
