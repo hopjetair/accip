@@ -57,26 +57,52 @@ This project includes:
 
 Once the environment is activated, run the main Python script:
 
-    For PostgresSql
-        Database creating
-            aws console
-        Schema & Datageneration
-            github action Aurora Airline Database Setup
-        Other Housekeeping runs
-            python db_infra/scripts/verify_records.py
-            python db_infra/scripts/purge_records.py
-            python .\postgrestest.py
-
-    For Mock data generation
-        Data Generation
-            python db_infra\scripts\generator.py
-        For Unittest to run
-            python -m unittest tests/test_data_generator.py -v
-
-        Large dataset (1700) records in total loaded into PostgreSQL successfully.
-
     For Non-Ai APIs
         For Fastapi to run
             uvicorn src.api.main:app --reload --port 8003 --host 0.0.0.0
-        For Unittest to run
+        For Unittest to run (broken for now)
             python -m unittest tests/test_api.py -v
+
+### AWS
+
+        How to connect github workflows and AWS with OCID
+            https://www.youtube.com/watch?v=aOoRaVuh8Lc&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=4&ab_channel=CodeMadeSimple
+
+### Github
+
+        How to work with multiple GitHub accounts on a single Windows computer using SSH
+            https://www.youtube.com/watch?v=Fyfp0oEWD6w&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=6&ab_channel=fromDev2Dev
+
+### Database setup
+
+    For PostgresSql
+         Database Creation
+                AWS
+                    Use the console to create the database (free tier) (https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge)
+                    DB name : hopjetairline_db
+                    DB user : hopjetair
+                    DB password : SecurePass123!
+                    Store this credentials in AWS Secrets Manager
+                        Secret name : db_credentials
+                        Secret value = {"db_user":"hopjetair","db_pass":"SecurePass123!"}
+
+               Locally
+                    Install postgres for windows (https://www.postgresql.org/download/windows/)
+                    DB password : Testing!@123  (Remarks : or what ever you want or have if you already have postgresql on your machine)
+                    use this password to replace  os.environ["db_adminpass"] = "Testing!@123" in new_generator.py.
+
+                    > python db_infra\scripts\new_generator.py uselocaldb   #(this will create the database and create datal)
+
+                    > python .\db_infra\scripts\verify_records.py  uselocaldb  #(this will give the count of records in each table)
+
+                    > python .\db_infra\scripts\purge_records.py  uselocaldb  #(this will delete all the records in each table)
+
+### Create a AWS Fargate Cluster
+
+        https://www.youtube.com/watch?v=1n46Nudo6Yo&t=19s&ab_channel=DigitalCloudTraining
+
+### Create a AWS ECR
+
+### Create an Aurora and RDS Postgressql
+
+        https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge

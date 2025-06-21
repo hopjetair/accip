@@ -3,18 +3,19 @@ import os
 import sys
 from datetime import datetime
 
+
 # Add the parent directory to the Python path to find config.py if needed
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-try:
-    from config import db_host, db_port, db_name, db_user, db_pass
-except ImportError:
-    # Fallback to environment variables if config.py is not found
-    db_host = os.getenv("DB_HOST", "database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com")
-    db_port = os.getenv("DB_PORT", "5432")
-    db_name = os.getenv("DB_NAME", "hopjetairline_db")
-    db_user = os.getenv("DB_USER", "dafa")
-    db_pass = os.getenv("DB_PASS", "asdfasdfs!")
+from config import *
+
+if len(sys.argv) > 1:  # than it is assumed it for localhost
+    os.environ["db_host"] = const_localhost # "localhost"
+    
+    os.environ["db_user"] = const_db_user #  "hopjetair"  # user for the database
+    os.environ["db_pass"] = const_db_pass # "SecurePass123!"  # password for the databaser
+   
+
 
 def verify_record_count():
     print(f"Starting record count verification at {datetime.now().strftime('%H:%M:%S')}")

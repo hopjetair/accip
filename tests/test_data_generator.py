@@ -37,7 +37,7 @@ class TestDataGenerator(unittest.TestCase):
 
         # Apply the schema to test_hopjetairline_db (assumes create_airline_schema.sql exists)
         #import os
-        #/os.system("psql -h localhost -p 5433 -U postgres -d test_hopjetairline_db -f create_airline_schema.sql")
+        #/os.system("psql -h localhost -p 5432 -U postgres -d test_hopjetairline_db -f create_airline_schema.sql")
         import os
         command = fr'"C:\Program Files\PostgreSQL\17\bin\psql" -h {db_host} -p {db_port} -U {db_user} -W {os.getenv(db_pass)} -d {db_testname}  -f  db_infra\scripts\create_airline_schema.sql'
         os.system(command)

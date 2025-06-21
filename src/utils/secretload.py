@@ -18,7 +18,7 @@ def get_secret(secret_name):
             os.environ[key] = value
     except ClientError as e:
         print(f"Error retrieving secret {secret_name}: {e}")
-        if os.getenv("NONPROD",config.nonprod).lower() == "true":
+        if os.getenv("nonprod",config.nonprod).lower() == "true":
             # Fallback for nonprod environment (local development)
             if secret_name == "db_credentials":
                 os.environ["db_user"] = os.getenv("db_user",config.db_user)
