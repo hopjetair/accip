@@ -9,7 +9,6 @@ def get_secret(secret_name):
     region_name = os.getenv("aws_region", config.aws_region)
     session = boto3.session.Session()
     client = session.client(service_name='secretsmanager', region_name=region_name)
-
     try:
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
         secret = get_secret_value_response['SecretString']

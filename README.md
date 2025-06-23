@@ -91,7 +91,7 @@ Once the environment is activated, run the main Python script:
                     DB password : Testing!@123  (Remarks : or what ever you want or have if you already have postgresql on your machine)
                     use this password to replace  os.environ["db_adminpass"] = "Testing!@123" in new_generator.py.
 
-                    > python db_infra\scripts\new_generator.py uselocaldb   #(this will create the database and create datal)
+                    > python db_infra\scripts\generator.py uselocaldb   #(this will create the database and create datal)
 
                     > python .\db_infra\scripts\verify_records.py  uselocaldb  #(this will give the count of records in each table)
 

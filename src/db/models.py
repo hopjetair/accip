@@ -5,7 +5,7 @@ from psycopg2 import Error
 def get_boarding_pass_data(cursor, booking_id):
     try:
         cursor.execute(
-            "SELECT b.booking_id, p.name, f.flight_number, f.departure, f.destination, bp.gate, bp.seat, bp.boarding_time "
+            "SELECT b.booking_id, p.name, f.flight_number, f.departure, f.destination, bp.gate, bp.seat, bp.boarding_time, bp.pdf_url "
             "FROM Bookings b "
             "JOIN Passengers p ON b.passenger_id = p.passenger_id "
             "JOIN Flights f ON b.flight_number = f.flight_number "

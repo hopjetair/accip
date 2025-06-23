@@ -10,31 +10,66 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from config import *
+from src.utils.secretload import get_secret
+
+if len(sys.argv) > 1:  # than it is assumed it for localhost
+    os.environ["db_host"] = const_localhost  # "localhost"
+    
+    os.environ["db_user"] = const_db_user  #"hopjetair"  # user for the database
+    os.environ["db_pass"] = const_db_pass  # "SecurePass123!"  # password for the databaser
+    
+    os.environ["db_adminuser"] = const_db_adminuser  # "postgres"  # user for the admin account
+    os.environ["db_adminpass"] = const_db_adminpass  # "Testing!@123"  # password for the admin account
+else:
+    os.environ["db_host"] = const_cloudhost  
+    get_secret("db_credentials")
+    os.environ["db_adminuser"] = os.getenv("db_user")  # "postgres"  # user for the admin account
+    os.environ["db_adminpass"] = os.getenv("db_pass")
+    
 
 class DataGenerator:
-    def __init__(self, host=os.getenv("db_host", db_host), port=os.getenv("DB_PORT", db_port), 
-                 db=os.getenv("DB_NAME", db_name), user=os.getenv("DB_USER", db_user), 
-                 password=os.getenv("DB_PASS", db_pass)):
+    def __init__(self, host=os.getenv("db_host", db_host), port=os.getenv("db_port", db_port), 
+                 db=os.getenv("db_name", db_name), user=os.getenv("db_user", db_user), 
+                 password=os.getenv("db_pass", db_pass), adminuser=os.getenv("db_adminuser", db_user), 
+                 adminpassword=os.getenv("db_adminpass", db_adminpass)):
+        
+        print(f"host : {os.getenv("db_host")}" )
+        
         """Initialize the DataGenerator with database connection and helper data."""
         self.fake = Faker()
         print(f"Starting database setup at {datetime.now().strftime('%H:%M:%S')}")
         # Connect to the default database to create hopjetairline_db if needed
         admin_conn = psycopg2.connect(
-            host=host, port=port, database='postgres', user=user, password=password
+            host=host, port=port, database='postgres', user=adminuser, password=adminpassword
         )
+        admin_conn.autocommit = True
         admin_cursor = admin_conn.cursor()
         try:
             print(f"Checking database {db} existence at {datetime.now().strftime('%H:%M:%S')}")
             admin_cursor.execute("SELECT 1 FROM pg_database WHERE datname=%s", (db,))
             if not admin_cursor.fetchone():
+                
+                if(user != adminuser) :
+                    # Check if role exists
+                    admin_cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s;", (user,))
+                    role_exists = admin_cursor.fetchone()
+
+                    if not role_exists:
+                        # Create new role (user) with password
+                        print(f"Creating user {user} at {datetime.now().strftime('%H:%M:%S')}")
+                        admin_cursor.execute(f"CREATE ROLE {user} WITH LOGIN PASSWORD '{password}';")
+                        print(f"Finished creating user {user} at {datetime.now().strftime('%H:%M:%S')}")
+                    else:
+                        print(f"Role {user} already exists, skipping creation at {datetime.now().strftime('%H:%M:%S')}")                    
+
                 print(f"Creating database {db} at {datetime.now().strftime('%H:%M:%S')}")
-                admin_cursor.execute(f"CREATE DATABASE {db}")
-                admin_conn.commit()
+                admin_cursor.execute(f"CREATE DATABASE {db} OWNER {user};")
+                #admin_conn.commit()
                 print(f"Finished creating database {db} at {datetime.now().strftime('%H:%M:%S')}")
             else:
                 print(f"Database {db} already exists at {datetime.now().strftime('%H:%M:%S')}")
         except psycopg2.Error as e:
-            admin_conn.rollback()
+            #admin_conn.rollback()
             print(f"Error creating database at {datetime.now().strftime('%H:%M:%S')}: {e}")
             raise
         finally:

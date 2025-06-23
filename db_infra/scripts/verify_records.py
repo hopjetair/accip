@@ -4,21 +4,27 @@ import sys
 from datetime import datetime
 
 
+
 # Add the parent directory to the Python path to find config.py if needed
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from config import *
+from src.utils.secretload import get_secret
 
 if len(sys.argv) > 1:  # than it is assumed it for localhost
     os.environ["db_host"] = const_localhost # "localhost"
     
     os.environ["db_user"] = const_db_user #  "hopjetair"  # user for the database
     os.environ["db_pass"] = const_db_pass # "SecurePass123!"  # password for the databaser
-   
+else:
+    os.environ["db_host"] = const_cloudhost  
+    get_secret("db_credentials")
 
 
 def verify_record_count():
     print(f"Starting record count verification at {datetime.now().strftime('%H:%M:%S')}")
+    
+    print(f"host : {os.getenv("db_host")}" )
     
     # Establish database connection
     try:

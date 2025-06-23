@@ -6,6 +6,8 @@ db_name = "hopjetairline_db"
 db_user = "hopjetair"
 db_pass = "SecurePass123!"
 
+#db_name = "postgres"
+
 
 # db_host = "localhost"
 

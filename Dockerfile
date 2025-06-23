@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY config.py .
 
+# Set environment variable
+ENV nonprod=False
+
 # Expose port
 EXPOSE 8003
 

@@ -10,6 +10,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from config import *
+from src.utils.secretload import get_secret
 
 if len(sys.argv) > 1:  # than it is assumed it for localhost
     os.environ["db_host"] = const_localhost  # "localhost"
@@ -19,7 +20,11 @@ if len(sys.argv) > 1:  # than it is assumed it for localhost
     
     os.environ["db_adminuser"] = const_db_adminuser  # "postgres"  # user for the admin account
     os.environ["db_adminpass"] = const_db_adminpass  # "Testing!@123"  # password for the admin account
-
+else:
+    os.environ["db_host"] = const_cloudhost  
+    get_secret("db_credentials")
+    os.environ["db_adminuser"] = os.getenv("db_user")  # "postgres"  # user for the admin account
+    os.environ["db_adminpass"] = os.getenv("db_pass")
     
 
 class DataGenerator:
@@ -27,6 +32,8 @@ class DataGenerator:
                  db=os.getenv("db_name", db_name), user=os.getenv("db_user", db_user), 
                  password=os.getenv("db_pass", db_pass), adminuser=os.getenv("db_adminuser", db_user), 
                  adminpassword=os.getenv("db_adminpass", db_adminpass)):
+        
+        print(f"host : {os.getenv("db_host")}" )
         
         """Initialize the DataGenerator with database connection and helper data."""
         self.fake = Faker()

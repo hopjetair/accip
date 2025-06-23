@@ -7,6 +7,7 @@ from config import *
 def get_db_connection():
     """Establish a connection to the PostgreSQL database."""
     try:
+        print(f"Dominic Host :  {db_host}" )
         conn = psycopg2.connect(
             host=os.getenv("db_host", db_host),
             port=os.getenv("db_port", db_port),
