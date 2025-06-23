@@ -27,7 +27,7 @@ async def print_boarding_pass(booking_id: str):
         result = get_boarding_pass_data(cursor, booking_id)
         if not result:
             raise HTTPException(status_code=404, detail="Boarding pass not found")
-        return {"status": "success", "boarding_pass": {"gate": result[0], "seat": result[1], "boarding_time": result[2], "pdf_url": result[3]}}
+        return {"status": "success", "boarding_pass": {"gate": result[5], "seat": result[6], "boarding_time": result[7], "pdf_url": result[8]}}
     finally:
         cursor.close()
         conn.close()
