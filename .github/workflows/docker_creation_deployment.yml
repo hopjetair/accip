@@ -1,4 +1,4 @@
-name: Deploy to Fargate (only ECR)
+name: Deploy to Fargate
 
 on:
   # push:
@@ -79,24 +79,24 @@ jobs:
           docker stop test-container
           docker rm test-container
 
-      # - name: Push image to Amazon ECR
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #   run: |
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY
+      - name: Push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY
 
-      # - name: Render Amazon ECS task definition
-      #   id: render-task-def
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: accip-api
-      #     image: ${{ steps.build-image.outputs.image }}:latest
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: accip-api
+          image: ${{ steps.build-image.outputs.image }}:latest
 
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
