@@ -50,7 +50,7 @@ jobs:
           echo "Read image URI: $IMAGE_URI"
 
       - name: Configure AWS credentials
-        uses: actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
