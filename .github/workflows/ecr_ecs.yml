@@ -1,9 +1,9 @@
 name: Deploy to Fargate ECR_ECS
 
 on:
-#   push:
-#     branches:
-#       - main
+  #   push:
+  #     branches:
+  #       - main
   workflow_dispatch: # Allows manual execution
 
 env:
@@ -63,8 +63,17 @@ jobs:
       - name: Run and test Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: |
-          docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
+          docker run -d -p 8003:8003 \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+            -e AWS_REGION=$AWS_REGION \
+            --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
           sleep 30
           docker logs test-container
           docker exec test-container curl -f http://localhost:8003/health || exit 1

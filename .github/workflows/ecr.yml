@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Build Test and Push Docker image to ECR
 
 on:
   # push:
@@ -89,7 +89,7 @@ jobs:
           echo "Saved image URI: $(cat image-uri.txt)"
 
       - name: Upload image URI artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image-uri
           path: image-uri.txt
