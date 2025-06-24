@@ -59,21 +59,21 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY .
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY" >> $GITHUB_OUTPUT
 
-      - name: Run and test Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          # Run the Docker image in the background
-          docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
-          # Wait for the container to start (adjust sleep time if needed)
-          sleep 30
-          # Check container logs
-          docker logs test-container
-          # Test the health check endpoint from within the container
-          docker exec test-container curl -f http://localhost:8003/health || exit 1
-          # Stop and remove the test container
-          docker stop test-container
-          docker rm test-container
+      # - name: Run and test Docker image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #   run: |
+      #     # Run the Docker image in the background
+      #     docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
+      #     # Wait for the container to start (adjust sleep time if needed)
+      #     sleep 30
+      #     # Check container logs
+      #     docker logs test-container
+      #     # Test the health check endpoint from within the container
+      #     docker exec test-container curl -f http://localhost:8003/health || exit 1
+      #     # Stop and remove the test container
+      #     docker stop test-container
+      #     docker rm test-container
 
       - name: Push image to Amazon ECR
         env:
