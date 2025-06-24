@@ -1,9 +1,9 @@
 name: Build Test and Push Docker image to ECR
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch: # Allows manual execution
 
 env:
@@ -56,6 +56,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY .
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY" >> $GITHUB_OUTPUT
+          echo "Built image: $ECR_REGISTRY/$ECR_REPOSITORY"
 
       - name: Run and test Docker image
         env:
@@ -82,14 +83,17 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "Pushed image to ECR: $ECR_REGISTRY/$ECR_REPOSITORY"
 
       - name: Save image URI as artifact
         run: |
           echo "${{ steps.build-image.outputs.image }}" > image-uri.txt
-          echo "Saved image URI: $(cat image-uri.txt)"
+          echo "Saved image URI to image-uri.txt: $(cat image-uri.txt)"
+          ls -l image-uri.txt
 
       - name: Upload image URI artifact
         uses: actions/upload-artifact@v4
         with:
           name: image-uri
           path: image-uri.txt
+          retention-days: 1 # Set short retention for testing

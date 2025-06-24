@@ -31,6 +31,16 @@ jobs:
         with:
           name: image-uri
           path: image-uri
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify artifact download
+        run: |
+          ls -R image-uri
+          if [ ! -f image-uri/image-uri.txt ]; then
+            echo "Error: image-uri.txt not found in downloaded artifact"
+            exit 1
+          fi
 
       - name: Read image URI
         id: read-image
@@ -40,7 +50,7 @@ jobs:
           echo "Read image URI: $IMAGE_URI"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
