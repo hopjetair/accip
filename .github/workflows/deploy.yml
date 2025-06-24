@@ -1,4 +1,4 @@
-name: Deploy to Fargate
+name: Deploy to Fargate Old
 
 on:
   # push:
