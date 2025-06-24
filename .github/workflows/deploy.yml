@@ -66,7 +66,7 @@ jobs:
           # Run the Docker image in the background
           docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
           # Wait for the container to start (adjust sleep time if needed)
-          sleep 10
+          sleep 30
           # Test the health check endpoint
           curl -f http://localhost:8003/health || exit 1
           # Stop and remove the test container
