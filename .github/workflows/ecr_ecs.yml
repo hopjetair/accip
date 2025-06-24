@@ -1,27 +1,28 @@
 name: Deploy to Fargate
 
 on:
-  push:
-    branches:
-      - main
+#   push:
+#     branches:
+#       - main
   workflow_dispatch: # Allows manual execution
 
 env:
   AWS_REGION: ap-southeast-2 # aws region
   ECR_REPOSITORY: non_ai_api # ECR Repository name
   ECS_CLUSTER: beloved-wolf-0mjus8 # ECS Cluster name
-  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1 #ECS service name
-  ECS_TASK_DEFINITION: task-definition.json # task defination file name  stored in D:\dominic\github\aimlops\accip\task-definition.json
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole #aws iam role allowing github action to execute thing in AWS
+  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1 # ECS service name
+  ECS_TASK_DEFINITION: task-definition.json # task definition file name
+  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole # AWS IAM role
 
 permissions:
   id-token: write # Required for OIDC
   contents: read # Required to checkout code
 
 jobs:
-  deploy:
+  ecr:
     runs-on: ubuntu-latest
-
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,7 +37,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # commented the test as we need to create the database
+      # Commented out tests as database setup is pending
       # - name: Run tests
       #   run: |
       #     python -m unittest tests/test_api.py -v
@@ -63,15 +64,10 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          # Run the Docker image in the background
           docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
-          # Wait for the container to start (adjust sleep time if needed)
           sleep 30
-          # Check container logs
           docker logs test-container
-          # Test the health check endpoint from within the container
           docker exec test-container curl -f http://localhost:8003/health || exit 1
-          # Stop and remove the test container
           docker stop test-container
           docker rm test-container
 
@@ -81,13 +77,26 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY
 
+  ecs:
+    runs-on: ubuntu-latest
+    needs: ecr # Ensures ECR job completes first
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Render Amazon ECS task definition
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: accip-api
-          image: ${{ steps.build-image.outputs.image }}:latest
+          image: ${{ needs.ecr.outputs.image }}:latest
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

@@ -7,9 +7,9 @@ from src.api.main import app
 from unittest.mock import patch, MagicMock
 
 from src.utils.secretload import get_secret
-from config import api_key_secret_name
+from config import *
 
-get_secret(api_key_secret_name)
+get_secret(const_api_key_secret_name)
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class TestAuthAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.secretvalue = os.getenv(api_key_secret_name)
+        cls.secretvalue = os.getenv(const_api_key_secret_name)
 
     def setUp(self):
         self.client = TestClient(app)

@@ -12,19 +12,19 @@ from config import *
 from src.utils.secretload import get_secret
 
 if len(sys.argv) > 1:  # than it is assumed it for localhost
-    os.environ["db_host"] = const_localhost # "localhost"
+    os.environ[const_fieldname_db_host] = const_localhost # "localhost"
     
-    os.environ["db_user"] = const_db_user #  "hopjetair"  # user for the database
-    os.environ["db_pass"] = const_db_pass # "SecurePass123!"  # password for the databaser
+    os.environ[const_fieldname_db_user] = const_db_user #  "hopjetair"  # user for the database
+    os.environ[const_fieldname_db_pass] = const_db_pass # "SecurePass123!"  # password for the databaser
 else:
-    os.environ["db_host"] = const_cloudhost  
-    get_secret("db_credentials")
+    os.environ[const_fieldname_db_host] = const_cloudhost  
+    get_secret(const_db_credentials_name)
 
 
 def verify_record_count():
     print(f"Starting record count verification at {datetime.now().strftime('%H:%M:%S')}")
     
-    print(f"host : {os.getenv("db_host")}" )
+    print(f"host : {os.getenv(const_fieldname_db_host)}" )
     
     # Establish database connection
     try:

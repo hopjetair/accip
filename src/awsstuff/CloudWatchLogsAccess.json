@@ -1,0 +1,20 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:*:489582127457:secret:*",
+                "arn:aws:logs:ap-southeast-2:489582127457:log-group:/ecs/accip-api:*"
+            ]
+        }
+    ]
+}

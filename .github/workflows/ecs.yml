@@ -1,0 +1,62 @@
+name: Deploy to ECS
+
+on:
+  workflow_run:
+    workflows: ["Build and Push to ECR"]
+    types:
+      - completed
+  workflow_dispatch: # Allows manual execution
+
+env:
+  AWS_REGION: ap-southeast-2
+  ECS_CLUSTER: beloved-wolf-0mjus8
+  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1
+  ECS_TASK_DEFINITION: task-definition.json
+  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read # Required to checkout code
+
+jobs:
+  ecs:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Only run if ECR workflow succeeded
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download image URI artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: image-uri
+          path: .
+
+      - name: Read image URI
+        id: read-image
+        run: |
+          IMAGE_URI=$(cat image-uri.txt)
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "Read image URI: $IMAGE_URI"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: accip-api
+          image: ${{ steps.read-image.outputs.image }}:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

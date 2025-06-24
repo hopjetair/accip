@@ -102,6 +102,7 @@ Once the environment is activated, run the main Python script:
         https://www.youtube.com/watch?v=1n46Nudo6Yo&t=19s&ab_channel=DigitalCloudTraining
 
 ### Create a AWS ECR
+        Lifecycle Policy
 
 ### Create an Aurora and RDS Postgressql
 

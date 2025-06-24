@@ -1,27 +1,25 @@
-name: Deploy to Fargate
+name: Build and Push to ECR
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch: # Allows manual execution
 
 env:
-  AWS_REGION: ap-southeast-2 # aws region
-  ECR_REPOSITORY: non_ai_api # ECR Repository name
-  ECS_CLUSTER: beloved-wolf-0mjus8 # ECS Cluster name
-  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1 #ECS service name
-  ECS_TASK_DEFINITION: task-definition.json # task defination file name  stored in D:\dominic\github\aimlops\accip\task-definition.json
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole #aws iam role allowing github action to execute thing in AWS
+  AWS_REGION: ap-southeast-2
+  ECR_REPOSITORY: non_ai_api
+  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
 permissions:
   id-token: write # Required for OIDC
   contents: read # Required to checkout code
 
 jobs:
-  deploy:
+  ecr:
     runs-on: ubuntu-latest
-
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,7 +34,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # commented the test as we need to create the database
+      # Commented out tests as database setup is pending
       # - name: Run tests
       #   run: |
       #     python -m unittest tests/test_api.py -v
@@ -62,16 +60,20 @@ jobs:
       - name: Run and test Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: |
-          # Run the Docker image in the background
-          docker run -d -p 8003:8003 --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
-          # Wait for the container to start (adjust sleep time if needed)
+          docker run -d -p 8003:8003 \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+            -e AWS_REGION=$AWS_REGION \
+            --name test-container $ECR_REGISTRY/$ECR_REPOSITORY
           sleep 30
-          # Check container logs
           docker logs test-container
-          # Test the health check endpoint from within the container
           docker exec test-container curl -f http://localhost:8003/health || exit 1
-          # Stop and remove the test container
           docker stop test-container
           docker rm test-container
 
@@ -81,18 +83,13 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY
 
-      - name: Render Amazon ECS task definition
-        id: render-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: accip-api
-          image: ${{ steps.build-image.outputs.image }}:latest
+      - name: Save image URI as artifact
+        run: |
+          echo "${{ steps.build-image.outputs.image }}" > image-uri.txt
+          echo "Saved image URI: $(cat image-uri.txt)"
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      - name: Upload image URI artifact
+        uses: actions/upload-artifact@v3
         with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          name: image-uri
+          path: image-uri.txt

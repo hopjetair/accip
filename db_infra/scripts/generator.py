@@ -13,27 +13,27 @@ from config import *
 from src.utils.secretload import get_secret
 
 if len(sys.argv) > 1:  # than it is assumed it for localhost
-    os.environ["db_host"] = const_localhost  # "localhost"
+    os.environ[const_fieldname_db_host] = const_localhost  # "localhost"
     
-    os.environ["db_user"] = const_db_user  #"hopjetair"  # user for the database
-    os.environ["db_pass"] = const_db_pass  # "SecurePass123!"  # password for the databaser
+    os.environ[const_fieldname_db_user] = const_db_user  #"hopjetair"  # user for the database
+    os.environ[const_fieldname_db_pass] = const_db_pass  # "SecurePass123!"  # password for the databaser
     
     os.environ["db_adminuser"] = const_db_adminuser  # "postgres"  # user for the admin account
     os.environ["db_adminpass"] = const_db_adminpass  # "Testing!@123"  # password for the admin account
 else:
-    os.environ["db_host"] = const_cloudhost  
-    get_secret("db_credentials")
-    os.environ["db_adminuser"] = os.getenv("db_user")  # "postgres"  # user for the admin account
-    os.environ["db_adminpass"] = os.getenv("db_pass")
+    os.environ[const_fieldname_db_host] = const_cloudhost  
+    get_secret(const_db_credentials_name)
+    os.environ["db_adminuser"] = os.getenv(const_fieldname_db_user)  # "postgres"  # user for the admin account
+    os.environ["db_adminpass"] = os.getenv(const_fieldname_db_pass)
     
 
 class DataGenerator:
-    def __init__(self, host=os.getenv("db_host", db_host), port=os.getenv("db_port", db_port), 
-                 db=os.getenv("db_name", db_name), user=os.getenv("db_user", db_user), 
-                 password=os.getenv("db_pass", db_pass), adminuser=os.getenv("db_adminuser", db_user), 
+    def __init__(self, host=os.getenv(const_fieldname_db_host, db_host), port=os.getenv(const_fieldname_db_port, db_port), 
+                 db=os.getenv(const_fieldname_db_name, db_name), user=os.getenv(const_fieldname_db_user, db_user), 
+                 password=os.getenv(const_fieldname_db_pass, db_pass), adminuser=os.getenv("db_adminuser", db_user), 
                  adminpassword=os.getenv("db_adminpass", db_adminpass)):
         
-        print(f"host : {os.getenv("db_host")}" )
+        print(f"host : {os.getenv(const_fieldname_db_host)}" )
         
         """Initialize the DataGenerator with database connection and helper data."""
         self.fake = Faker()
