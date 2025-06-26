@@ -102,8 +102,24 @@ Once the environment is activated, run the main Python script:
         https://www.youtube.com/watch?v=1n46Nudo6Yo&t=19s&ab_channel=DigitalCloudTraining
 
 ### Create a AWS ECR
+
         Lifecycle Policy
 
 ### Create an Aurora and RDS Postgressql
 
         https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge
+
+### Github action
+
+        Here i have a setup for my aws, once i create the aws thing hopjetair aws
+
+        At present all are manual trigger, in prod we will trigger on build
+
+            .github\workflows\aurora-airline-setup.yml
+                This file create a database if doest not exist, run the schema and creates dummy data to AWS RDS
+
+            .github\workflows\ecr.yml
+                This  file create the docker image, does the test and deploy the image to ECR
+
+            .github\workflows\ecs.yml
+                This file creates and deploys the fargate task on ECS -> Service, it gets trigger only if ect.yml is successfull.
