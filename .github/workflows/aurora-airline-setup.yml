@@ -62,7 +62,7 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo "DB_HOST=database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com" >> $GITHUB_ENV
+          echo "DB_HOST=postgressql-hopjetairline-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com" >> $GITHUB_ENV
           echo "DB_PORT=5432" >> $GITHUB_ENV
           echo "DB_NAME=hopjetairline_db" >> $GITHUB_ENV
           echo "AWS_REGION=ap-southeast-2" >> $GITHUB_ENV

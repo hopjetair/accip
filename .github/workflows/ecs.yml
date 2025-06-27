@@ -1,16 +1,16 @@
 name: Deploy to ECS
 
 on:
-  workflow_run:
-    workflows: ["Build Test and Push Docker image to ECR"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build Test and Push Docker image to ECR"]
+  #   types:
+  #     - completed
   workflow_dispatch: # Allows manual execution
 
 env:
   AWS_REGION: ap-southeast-2
-  ECS_CLUSTER: beloved-wolf-0mjus8 # hopjetair_ecs_fragate_cluster_1
-  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1 # hopjetair_ecs_fragate_cluster_service_fastapi_1   task family name : hopjetair_ecs_fragate_cluster_service_fastapi_tf_non_ai_api    Task_name : hopjetair_ecs_fragate_cluster_service_fastapi_tf_non_ai_api_taskcontainer
+  ECS_CLUSTER: beloved-wolf-0mjus8 # non_ai_api_cluster
+  ECS_SERVICE: fastapi_accip-api-service-fb4p9ip1 # non_ai_api_service  task family name : non_ai_api_taskfn    Task_name : non_ai_api_taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 

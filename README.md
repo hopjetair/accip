@@ -78,7 +78,7 @@ Once the environment is activated, run the main Python script:
     For PostgresSql
          Database Creation
                 AWS
-                    Use the console to create the database (free tier) (https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge)
+                    Use the console to create the database (free tier) (https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge  https://www.youtube.com/watch?v=vw5EO5Jz8-8&ab_channel=BeABetterDev)
                     DB name : hopjetairline_db
                     DB user : hopjetair
                     DB password : SecurePass123!
@@ -109,6 +109,12 @@ Once the environment is activated, run the main Python script:
 
         https://www.youtube.com/watch?v=YxMibQv7w8o&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=2&t=326s&ab_channel=ProgrammingKnowledge
 
+        Create a database instance
+                Free tier
+                Take the user and password from the secret manager
+
+        Once created, set inbound rule for data to be accessed
+
 ### Github action
 
         Here i have a setup for my aws, once i create the aws thing hopjetair aws
@@ -123,3 +129,15 @@ Once the environment is activated, run the main Python script:
 
             .github\workflows\ecs.yml
                 This file creates and deploys the fargate task on ECS -> Service, it gets trigger only if ect.yml is successfull.
+
+### VPC
+
+        https://docs.aws.amazon.com/vpc/latest/userguide/vpc-example-dev-test.html#create-vpc-one-public-subnet
+
+        https://www.youtube.com/watch?v=ApGz8tpNLgo&ab_channel=BeABetterDev
+
+### Ecs fargate static elastic ip address
+
+        https://repost.aws/knowledge-center/ecs-fargate-static-elastic-ip-address
+
+        https://www.youtube.com/watch?v=o7s-eigrMAI&ab_channel=BeABetterDev

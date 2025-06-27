@@ -1,6 +1,6 @@
 import psycopg2
 
-db_host = "database-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com"
+db_host = "postgressql-hopjetairline-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com"
 
 db_name = "hopjetairline_db"
 db_user = "hopjetair"
