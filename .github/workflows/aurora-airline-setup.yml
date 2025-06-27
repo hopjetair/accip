@@ -37,9 +37,13 @@ jobs:
           sudo ./aws/install --update
           rm -rf awscliv2.zip aws
 
+      # - name: Install Python dependencies
+      #   run: |
+      #     pip install psycopg2-binary faker
       - name: Install Python dependencies
         run: |
-          pip install psycopg2-binary faker
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Retrieve AWS Secrets
         run: |
