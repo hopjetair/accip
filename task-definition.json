@@ -1,5 +1,5 @@
    {
-     "family": "accip-api",  
+     "family": "non_ai_api_taskfn",  
      "executionRoleArn": "arn:aws:iam::489582127457:role/ecsTaskExecutionRole",
      "taskRoleArn": "arn:aws:iam::489582127457:role/ecsTaskRole",
      "networkMode": "awsvpc",
@@ -12,7 +12,7 @@
      },  
      "containerDefinitions": [
        {
-         "name": "accip-api",
+         "name": "non_ai_api_taskcontainer",
          "image": "489582127457.dkr.ecr.ap-southeast-2.amazonaws.com/non_ai_api:latest",
          "essential": true,
          "portMappings": [
@@ -26,7 +26,7 @@
          "logConfiguration": {
            "logDriver": "awslogs",
            "options": {
-             "awslogs-group": "/ecs/accip-api",
+             "awslogs-group": "/ecs/non_ai_api_taskfn",
              "mode": "non-blocking",
              "awslogs-create-group": "true",
              "max-buffer-size": "25m",          
