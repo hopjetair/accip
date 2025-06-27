@@ -12,6 +12,7 @@ env:
   ECS_CLUSTER: non_ai_api_cluster
   ECS_SERVICE: non_ai_api_service #task family name : non_ai_api_taskfn    Task_name : non_ai_api_taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
+  ECS_TASK_CONTAINER: non_ai_api_taskcontainer
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
 permissions:
@@ -60,7 +61,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: accip-api
+          container-name: ${{ env.ECS_TASK_CONTAINER }}
           image: ${{ steps.read-image.outputs.image }}:latest
 
       - name: Deploy Amazon ECS task definition
