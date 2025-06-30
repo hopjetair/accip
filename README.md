@@ -68,10 +68,14 @@ Once the environment is activated, run the main Python script:
         How to connect github workflows and AWS with OCID
             https://www.youtube.com/watch?v=aOoRaVuh8Lc&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=4&ab_channel=CodeMadeSimple
 
+
 ### Github
 
         How to work with multiple GitHub accounts on a single Windows computer using SSH
             https://www.youtube.com/watch?v=Fyfp0oEWD6w&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=6&ab_channel=fromDev2Dev
+
+### AWS multiple account
+
 
 ### Database setup
 

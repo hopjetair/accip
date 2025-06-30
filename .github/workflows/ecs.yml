@@ -1,19 +1,19 @@
 name: Deploy to ECS
 
 on:
-  workflow_run:
-    workflows: ["Build Test and Push Docker image to ECR"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build Test and Push Docker image to ECR"]
+  #   types:
+  #     - completed
   workflow_dispatch: # Allows manual execution
 
 env:
-  AWS_REGION: ap-southeast-2
+  AWS_REGION: ap-south-1
   ECS_CLUSTER: non_ai_api_cluster
   ECS_SERVICE: non_ai_api_service #task family name : non_ai_api_taskfn    Task_name : non_ai_api_taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
   ECS_TASK_CONTAINER: non_ai_api_taskcontainer
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
+  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
 
 permissions:
   id-token: write # Required for OIDC

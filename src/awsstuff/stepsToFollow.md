@@ -2,27 +2,31 @@
 
 ## Step 0
 
-### Create the Roles
+### Create the Roles (done)
 
 ## Step 1
 
-### Create aws secrets
+### Create aws secrets (done)
 
 ## Step 2
 
-### Create the Postgresql database instance
+### Create the Postgresql database instance (done)
 
 ## Step 3
 
-### Setup the security policy for the database
+### Setup the security policy for the database (done)
 
 ## Step 4
 
-### run the github action for datbase
+### run the github action for database
 
 ## Step 5
 
-### Create ECR container
+### Create ECR container (done)
+
+## Step 5a
+
+### setup the lifecycle policy for ECR images (done)
 
 ## Step 6
 
@@ -40,10 +44,6 @@
 
 ### run the github action for ECR & ECS
 
-## Step 10
-
-### setup the lifecycle policy for ECR images
-
 ## Step 11
 
 ### Setup the security policy for the task to be access publicly
@@ -51,3 +51,15 @@
 ## Step 12
 
 ### set the task desirable for service to 1
+
+### Create ALB load balancer
+
+### Create VPC
+
+### Subnets
+
+### Routers
+
+### InternetGateway
+
+### Target groups
