@@ -75,7 +75,7 @@ Once the environment is activated, run the main Python script:
             https://www.youtube.com/watch?v=Fyfp0oEWD6w&list=PL5-Ls12B-Wv4IS1bH639RS7pv57ptFPbr&index=6&ab_channel=fromDev2Dev
 
 ### AWS multiple account
-
+        https://www.youtube.com/watch?v=1v8EMew-8nE&t=199s&ab_channel=CameronMcKenzie
 
 ### Database setup
 

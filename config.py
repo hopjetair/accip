@@ -10,7 +10,7 @@ const_db_pass = "SecurePass123!"  # password for the databaser
 const_db_adminuser = "postgres"  # user for the admin account
 const_db_adminpass = "Testing!@123"  # password for the admin account
 
-const_cloudhost = "postgressql-hopjetairline-1.cniwous8qb34.ap-south-1.rds.amazonaws.com"
+const_cloudhost = "postgressql-hopjetairline-1.cniwous8qb34.ap-southeast-2.rds.amazonaws.com"
 
 const_api_key_secret_name = "api_secrets"
 const_db_credentials_name = "db_credentials"
@@ -50,6 +50,6 @@ db_adminpass = os.getenv(const_fieldname_db_pass, "Testing!@123")
 db_testname = os.getenv("db_testname", "test_hopjetairline_db")
 
 # AWS configuration
-aws_region = os.getenv(const_fieldname_aws_region, "ap-south-1")
+aws_region = os.getenv(const_fieldname_aws_region, "ap-southeast-2")
 
 

@@ -7,9 +7,9 @@ on:
   workflow_dispatch: # Allows manual execution
 
 env:
-  AWS_REGION: ap-south-1
+  AWS_REGION: ap-southeast-2
   ECR_REPOSITORY: non_ai_api
-  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
+  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
 permissions:
   id-token: write # Required for OIDC
