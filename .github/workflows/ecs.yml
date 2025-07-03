@@ -1,10 +1,10 @@
 name: Deploy to ECS
 
 on:
-  workflow_run:
-    workflows: ["Build Test and Push Docker image to ECR"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build Test and Push Docker image to ECR"]
+  #   types:
+  #     - completed
   workflow_dispatch: # Allows manual execution
 
 env:
