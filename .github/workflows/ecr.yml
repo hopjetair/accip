@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: ap-southeast-2
-  ECR_REPOSITORY: non_ai_api
+  ECR_REPOSITORY: non-ai-api
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
 
 permissions:
