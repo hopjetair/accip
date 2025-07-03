@@ -1,16 +1,16 @@
 name: Deploy to ECS
 
 on:
-  # workflow_run:
-  #   workflows: ["Build Test and Push Docker image to ECR"]
-  #   types:
-  #     - completed
+  workflow_run:
+    workflows: ["Build Test and Push Docker image to ECR"]
+    types:
+      - completed
   workflow_dispatch: # Allows manual execution
 
 env:
   AWS_REGION: ap-southeast-2
   ECS_CLUSTER: hopjetair-cluster
-  ECS_SERVICE: non-ai-api-service #task family name : non-ai-api-task    Task_name : non-ai-api-taskcontainer
+  ECS_SERVICE: hopjetair-non-ai-api-service #task family name : non-ai-api-task    Task_name : non-ai-api-taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
   ECS_TASK_CONTAINER: non-ai-api-taskcontainer
   AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
