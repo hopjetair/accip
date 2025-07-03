@@ -27,7 +27,10 @@ def custom_openapi():
     openapi_schema["components"]["securitySchemes"] = {
         "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"}
     }
-    openapi_schema["security"] = [{"ApiKeyAuth": []}]
+    for path in openapi_schema["paths"].values():
+        for method in path.values():
+            method["security"] = [{"ApiKeyAuth": []}]
+    #openapi_schema["security"] = [{"ApiKeyAuth": []}]
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
