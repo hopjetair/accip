@@ -30,7 +30,7 @@ def custom_openapi():
     for path in openapi_schema["paths"].values():
         for method in path.values():
             method["security"] = [{"ApiKeyAuth": []}]
-    #openapi_schema["security"] = [{"ApiKeyAuth": []}]
+    
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
