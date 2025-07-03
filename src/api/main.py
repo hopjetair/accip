@@ -45,6 +45,7 @@ async def health_deep():
         async with get_db_connection() as conn:
             async with conn.cursor() as cur:
                 await cur.execute("SELECT 1")
+                await conn.commit()
                 return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "ok", "db": "reachable"})
     except Exception as e:
         return JSONResponse(

@@ -9,7 +9,9 @@ from config import *
 def get_secret(secret_name):
     region_name = os.getenv(const_fieldname_aws_region, aws_region)
     try:
-        #raise NoCredentialsError()            
+        if os.getenv(const_fieldname_nonprod, "True").lower() == "true":
+            raise NoCredentialsError()            
+        
         session = boto3.session.Session()
         client = session.client(service_name='secretsmanager', region_name=region_name)
         get_secret_value_response = client.get_secret_value(SecretId=secret_name)
