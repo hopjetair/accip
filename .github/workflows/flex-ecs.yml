@@ -18,7 +18,6 @@ env:
   ECS_TASK_DEFINITION: task-definition.json
   ECS_TASK_CONTAINER: non-ai-api-taskcontainer
   AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
-
   DEFAULT_IMAGE_URI: 109038807292.dkr.ecr.ap-south-1.amazonaws.com/non-ai-api
 
 permissions:
