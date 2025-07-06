@@ -19,7 +19,7 @@ env:
   ECS_TASK_CONTAINER: non-ai-api-taskcontainer
   AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
 
-  DEFAULT_IMAGE_URI: 109038807292.dkr.ecr.ap-southeast-2.amazonaws.com/non_ai_api
+  DEFAULT_IMAGE_URI: 109038807292.dkr.ecr.ap-south-1.amazonaws.com/non-ai-api
 
 permissions:
   id-token: write # Required for OIDC
