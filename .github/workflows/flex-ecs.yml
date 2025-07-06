@@ -1,0 +1,96 @@
+name: Deploy to ECS in a Flexible way
+
+on:
+  workflow_run:
+    workflows: ["Build Test and Push Docker image to ECR"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (leave empty to use latest from ECR)"
+        required: false
+        type: string
+
+env:
+  AWS_REGION: ap-south-1
+  ECS_CLUSTER: hopjetair-cluster
+  ECS_SERVICE: hopjetair-non-ai-api-service #task family name : non-ai-api-task    Task_name : non-ai-api-taskcontainer
+  ECS_TASK_DEFINITION: task-definition.json
+  ECS_TASK_CONTAINER: non-ai-api-taskcontainer
+  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
+
+  DEFAULT_IMAGE_URI: 109038807292.dkr.ecr.ap-southeast-2.amazonaws.com/non_ai_api
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read # Required to checkout code
+
+jobs:
+  ecs:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Determine image to deploy
+        id: determine-image
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ -n "${{ github.event.inputs.image_tag }}" ]]; then
+              IMAGE="${{ env.DEFAULT_IMAGE_URI }}:${{ github.event.inputs.image_tag }}"
+              echo "Using manual input tag: $IMAGE"
+            else
+              IMAGE="${{ env.DEFAULT_IMAGE_URI }}:latest"
+              echo "Using latest tag for manual dispatch: $IMAGE"
+            fi
+          else
+            # Try to get from artifact first
+            echo "Attempting to download artifact from previous workflow..."
+          fi
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Download image URI artifact (if triggered by workflow)
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: image-uri
+          path: image-uri
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Read image URI from artifact
+        if: github.event_name == 'workflow_run'
+        id: read-artifact
+        run: |
+          if [ -f image-uri/image-uri.txt ]; then
+            IMAGE_URI=$(cat image-uri/image-uri.txt)
+            echo "image=$IMAGE_URI:latest" >> $GITHUB_OUTPUT
+            echo "Using image from artifact: $IMAGE_URI:latest"
+          else
+            echo "Artifact not found, using default image"
+            echo "image=${{ env.DEFAULT_IMAGE_URI }}:latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.ECS_TASK_CONTAINER }}
+          image: ${{ steps.read-artifact.outputs.image || steps.determine-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
