@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: non-ai-api
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
+  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
 
 permissions:
   id-token: write # Required for OIDC

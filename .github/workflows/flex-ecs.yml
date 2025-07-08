@@ -17,8 +17,8 @@ env:
   ECS_SERVICE: hopjetair-non-ai-api-service #task family name : non-ai-api-task    Task_name : non-ai-api-taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
   ECS_TASK_CONTAINER: non-ai-api-taskcontainer
-  AWS_ROLE_ARN: arn:aws:iam::489582127457:role/GitHubActionsRole
-  DEFAULT_IMAGE_URI: 489582127457.dkr.ecr.us-east-1.amazonaws.com/non-ai-api
+  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
+  DEFAULT_IMAGE_URI: 109038807292.dkr.ecr.us-east-1.amazonaws.com/non-ai-api
 
 permissions:
   id-token: write # Required for OIDC

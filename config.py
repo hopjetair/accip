@@ -12,7 +12,8 @@ const_db_adminpass = "Testing!@123"  # password for the admin account
 
 #const_cloudhost = "postgressql-hopjetairline-1.cniwous8qb34.ap-south-1.rds.amazonaws.com"
 #const_cloudhost = "postgressql-hopjetairline-1.c50k40mcme1j.ap-southeast-2.rds.amazonaws.com"
-const_cloudhost = "hopjetair-postgres.c478iw66uzuh.us-east-1.rds.amazonaws.com"                             
+#const_cloudhost = "hopjetair-postgres.c478iw66uzuh.us-east-1.rds.amazonaws.com"                             
+const_cloudhost = "hopjetair-postgres.cepc0wqo22hd.us-east-1.rds.amazonaws.com"                             
 
 const_api_key_secret_name = "api_secrets"
 const_db_credentials_name = "db_credentials"
