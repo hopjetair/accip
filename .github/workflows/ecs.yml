@@ -8,12 +8,12 @@ on:
   workflow_dispatch: # Allows manual execution
 
 env:
-  AWS_REGION: ap-south-1
+  AWS_REGION: us-east-1
   ECS_CLUSTER: hopjetair-cluster
   ECS_SERVICE: hopjetair-non-ai-api-service #task family name : non-ai-api-task    Task_name : non-ai-api-taskcontainer
   ECS_TASK_DEFINITION: task-definition.json
   ECS_TASK_CONTAINER: non-ai-api-taskcontainer
-  AWS_ROLE_ARN: arn:aws:iam::109038807292:role/GitHubActionsRole
+  AWS_ROLE_ARN: arn:aws:iam::48958212745792:role/GitHubActionsRole
 
 permissions:
   id-token: write # Required for OIDC

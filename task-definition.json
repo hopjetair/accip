@@ -1,7 +1,7 @@
    {
      "family": "non-ai-api-task",  
-     "executionRoleArn": "arn:aws:iam::109038807292:role/ecsTaskExecutionRole",
-     "taskRoleArn": "arn:aws:iam::109038807292:role/ecsTaskRole",
+     "executionRoleArn": "arn:aws:iam::48958212745792:role/ecsTaskExecutionRole",
+     "taskRoleArn": "arn:aws:iam::48958212745792:role/ecsTaskRole",
      "networkMode": "awsvpc",
      "requiresCompatibilities": ["FARGATE"],
      "cpu": "512",
@@ -13,7 +13,7 @@
      "containerDefinitions": [
        {
          "name": "non-ai-api-taskcontainer",
-         "image": "109038807292.dkr.ecr.ap-south-1.amazonaws.com/non-ai-api:latest",
+         "image": "48958212745792.dkr.ecr.us-east-1.amazonaws.com/non-ai-api:latest",
          "essential": true,
          "portMappings": [
            {
@@ -30,7 +30,7 @@
              "mode": "non-blocking",
              "awslogs-create-group": "true",
              "max-buffer-size": "25m",          
-             "awslogs-region": "ap-south-1",
+             "awslogs-region": "us-east-1",
              "awslogs-stream-prefix": "ecs"
            }
          },

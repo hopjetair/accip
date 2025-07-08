@@ -1,7 +1,7 @@
 import psycopg2
 
 
-db_host = "postgressql-hopjetairline-1.cniwous8qb34.ap-south-1.rds.amazonaws.com"
+db_host = "hopjetair-postgres.c478iw66uzuh.us-east-1.rds.amazonaws.com"
 
 db_name = "hopjetairline_db"
 db_user = "hopjetair"
@@ -29,7 +29,7 @@ db_pass = "SecurePass123!"
 
 connection = psycopg2.connect(host = db_host, database =  db_name, user = db_user, password = db_pass)
 
-connection = psycopg2.connect("postgresql://hopjetair:SecurePass123!@localhost:5432/hopjetairline_db")
+#connection = psycopg2.connect("postgresql://hopjetair:SecurePass123!@localhost:5432/hopjetairline_db")
 print("connected to the databaser")
 print(connection.get_dsn_parameters()['host'])  # Output: localhost
 cursor = connection.cursor()

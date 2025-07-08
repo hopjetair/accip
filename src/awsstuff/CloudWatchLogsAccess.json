@@ -12,8 +12,8 @@
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:secretsmanager:*:109038807292:secret:*",
-                "arn:aws:logs:*:109038807292:log-group:/ecs/accip-api:*"
+                "arn:aws:secretsmanager:*:48958212745792:secret:*",
+                "arn:aws:logs:*:48958212745792:log-group:/ecs/accip-api:*"
             ]
         }
     ]
