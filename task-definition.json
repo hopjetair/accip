@@ -1,7 +1,7 @@
    {
      "family": "non-ai-api-task",  
-     "executionRoleArn": "arn:aws:iam::48958212745792:role/ecsTaskExecutionRole",
-     "taskRoleArn": "arn:aws:iam::48958212745792:role/ecsTaskRole",
+     "executionRoleArn": "arn:aws:iam::489582127457:role/ecsTaskExecutionRole",
+     "taskRoleArn": "arn:aws:iam::489582127457:role/ecsTaskRole",
      "networkMode": "awsvpc",
      "requiresCompatibilities": ["FARGATE"],
      "cpu": "512",
@@ -13,7 +13,7 @@
      "containerDefinitions": [
        {
          "name": "non-ai-api-taskcontainer",
-         "image": "48958212745792.dkr.ecr.us-east-1.amazonaws.com/non-ai-api:latest",
+         "image": "489582127457.dkr.ecr.us-east-1.amazonaws.com/non-ai-api:latest",
          "essential": true,
          "portMappings": [
            {
